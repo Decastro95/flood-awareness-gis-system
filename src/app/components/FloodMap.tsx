@@ -13,6 +13,25 @@ map.on("load", async () => {
   map.addSource("floodZones", {
     type: "geojson",
     data: "/data/flood_zones.geojson",
+
+    async function loadSafeZones() {
+  const { data } = await fetch("/api/safe-zones").then(res => res.json());
+
+  data.forEach((zone: any) => {
+    new maplibregl.Marker({ color: "green" })
+      .setLngLat([zone.longitude, zone.latitude])
+      .setPopup(
+        new maplibregl.Popup().setHTML(
+          `<strong>${zone.name}</strong><br/>Capacity: ${zone.capacity}`
+        )
+      )
+      .addTo(map);
+  });
+}
+
+loadSafeZones();
+
+
   });
 
   map.addLayer({
