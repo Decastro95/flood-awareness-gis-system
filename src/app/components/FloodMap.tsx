@@ -9,6 +9,22 @@ export default function FloodMap() {
 
   useEffect(() => {
     if (!mapContainer.current) return;
+map.on("load", async () => {
+  map.addSource("floodZones", {
+    type: "geojson",
+    data: "/data/flood_zones.geojson",
+  });
+
+  map.addLayer({
+    id: "flood-zones-layer",
+    type: "fill",
+    source: "floodZones",
+    paint: {
+      "fill-color": "#ff0000",
+      "fill-opacity": 0.5,
+    },
+  });
+});
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
