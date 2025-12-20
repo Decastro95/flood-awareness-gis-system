@@ -24,6 +24,11 @@ export default function MapPage() {
 
           <hr />
 
+          <a href="/alerts" style={{ color: "#1e88e5", fontWeight: "bold" }}>
+  View Flood Alerts →
+</a>
+
+
           <h3>Safe Zones</h3>
           <p>
             Designated flood-free areas suitable for evacuation and

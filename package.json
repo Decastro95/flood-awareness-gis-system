@@ -1,5 +1,25 @@
 {
+  "name": "flood-awareness-gis-system",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
-    "maplibre-gl": "^5.15.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "maplibre-gl": "^5.15.0",
+    "next": "^15.0.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "9.39.2",
+    "eslint-config-next": "16.1.0",
+    "typescript": "^5.3.0"
   }
 }

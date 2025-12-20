@@ -6,6 +6,22 @@ A GIS-Based Public Information Platform for Flood Preparedness and Response
 
 The system implements GIS-based flood hazard visualization using GeoJSON polygon overlays rendered through MapLibre GL JS. Flood-prone zones are spatially represented and overlaid onto an interactive base map, enabling clear identification of high-risk areas.
 
+The system integrates real-time and near–real-time meteorological data from authoritative open APIs, elevation data derived from digital elevation models, and spatial datasets representing flood-prone and flood-free zones. These datasets are visualized through an interactive GIS dashboard to support flood awareness, early warning, and evacuation planning in Northern Namibia.
+
+The system integrates a spatially enabled database using Supabase and PostGIS to store flood-free safe zones and evacuation shelters. These locations are dynamically retrieved and visualized on the GIS dashboard using map markers, enabling users to identify nearby safe areas during flood events.
+
+The system supports near–real-time flood monitoring through periodic data updates, simulating live sensor feeds.
+
+The system integrates data from authoritative open meteorological APIs.
+
+Real-time rainfall and weather indicators are retrieved from OpenWeatherMap’s public API.
+
+Digital Elevation Models (DEM) were used to identify high-ground areas suitable for evacuation and shelter placement.
+
+Safe zones include public infrastructure such as schools and community halls identified through OpenStreetMap and validated through literature and historical flood response reports.
+
+The system integrates an early warning module that displays flood alerts and rainfall indicators using a spatially enabled backend. Alerts are dynamically retrieved from the database and visually classified by severity, supporting timely public awareness and disaster preparedness.
+
 A️⃣ Safe Zones & Shelters (Supabase + Map markers)
 Supports evacuation & disaster response
 
