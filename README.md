@@ -4,6 +4,16 @@ A GIS-based flood awareness and risk mapping system for Northern Namibia.
 
 A GIS-Based Public Information Platform for Flood Preparedness and Response
 
+The system implements GIS-based flood hazard visualization using GeoJSON polygon overlays rendered through MapLibre GL JS. Flood-prone zones are spatially represented and overlaid onto an interactive base map, enabling clear identification of high-risk areas.
+
+A️⃣ Safe Zones & Shelters (Supabase + Map markers)
+Supports evacuation & disaster response
+
+B️⃣ Flood Alerts & Rainfall Indicators
+Supports early warning system
+
+A user-friendly public information dashboard designed to improve situational awareness and decision-making during flood events.
+
 📌 Project Overview
 
 Flooding is a recurring natural hazard in Northern Namibia, particularly affecting regions such as Ovamboland (Oshana, Oshikoto, Ohangwena, Omusati), Kavango, Kunene, and Zambezi. These flood events frequently result in displacement of communities, damage to infrastructure, and disruption of livelihoods.
