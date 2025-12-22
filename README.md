@@ -44,6 +44,10 @@ Supports early warning system
 
 Kavango and Zambezi river flood buffer zones were implemented using GIS polygon overlays to represent areas at elevated risk of flooding during peak rainfall seasons. These buffers improve spatial awareness of river-related flood hazards in northern and north-eastern Namibia.
 
+An elevation-based high-ground layer was incorporated using GIS polygon overlays to identify safer areas suitable for evacuation. Interactive layer toggle controls were implemented to allow users to selectively visualize river flood buffers and high-ground zones, improving situational awareness and usability.
+
+River flood buffer zones for the Kunene, Kavango, and Zambezi rivers were implemented to represent areas of elevated flood risk due to river overflow. An elevation-based high-ground layer was incorporated to identify safer evacuation areas. Interactive toggle controls allow users to dynamically explore flood hazards and safe zones, improving usability and situational awareness.
+
 1️⃣ SYSTEM ARCHITECTURE DIAGRAM (FOR REPORT / README)
 
 You can include this exact diagram in your assignment (as text or redraw it in Draw.io / PowerPoint).

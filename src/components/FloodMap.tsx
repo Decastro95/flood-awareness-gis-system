@@ -17,7 +17,7 @@ export default function FloodMap() {
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: "https://demotiles.maplibre.org/style.json",
-      center: [18.5, -18.2],
+      center: [17.5, -18.0],
       zoom: 5,
     });
 
@@ -25,7 +25,6 @@ export default function FloodMap() {
     map.addControl(new maplibregl.NavigationControl(), "top-right");
 
     map.on("load", () => {
-      // River flood buffers
       map.addSource("riverFloodBuffers", {
         type: "geojson",
         data: "/data/river_flood_buffers.geojson",
@@ -51,7 +50,6 @@ export default function FloodMap() {
         },
       });
 
-      // High ground (elevation)
       map.addSource("highGround", {
         type: "geojson",
         data: "/data/high_ground_elevation.geojson",
@@ -127,7 +125,7 @@ export default function FloodMap() {
             checked={showHighGround}
             onChange={() => setShowHighGround(!showHighGround)}
           />{" "}
-          High-Ground / Safe Areas
+          High-Ground Safe Areas
         </label>
       </div>
 

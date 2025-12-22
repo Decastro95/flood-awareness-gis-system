@@ -4,8 +4,8 @@
     {
       "type": "Feature",
       "properties": {
-        "elevation": "High Ground",
-        "safe": "Yes"
+        "elevation": "High",
+        "safe_zone": "Yes"
       },
       "geometry": {
         "type": "Polygon",
@@ -23,8 +23,8 @@
     {
       "type": "Feature",
       "properties": {
-        "elevation": "High Ground",
-        "safe": "Yes"
+        "elevation": "High",
+        "safe_zone": "Yes"
       },
       "geometry": {
         "type": "Polygon",
