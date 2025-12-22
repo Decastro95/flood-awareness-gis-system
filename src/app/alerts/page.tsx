@@ -17,6 +17,18 @@ export default function AlertsPage() {
         <h1>Flood Alerts & Rainfall Monitoring</h1>
         <p>Early warning information for flood preparedness</p>
       </header>
+borderLeft: `6px solid ${
+  alert.priority === "High"
+    ? "#7c2d12"
+    : alert.alert_level === "High"
+    ? "#dc2626"
+    : "#f59e0b"
+}`
+{alert.priority === "High" && (
+  <p style={{ color: "#7c2d12", fontWeight: "bold" }}>
+    High Population Exposure Area
+  </p>
+)}
 
       <main style={{ padding: "2rem" }}>
         {alerts.map(alert => (

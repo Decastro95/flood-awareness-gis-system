@@ -1,51 +1,75 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import maplibregl from "maplibre-gl";
+import { useEffect, useRef } from "react";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 export default function FloodMap() {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<maplibregl.Map | null>(null);
+  const mapContainer = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (map.current) return; // initialize map only once
+    if (!mapContainer.current) return;
 
-    map.current = new maplibregl.Map({
-      container: mapContainer.current!,
-      style: 'https://demotiles.maplibre.org/style.json', // stylesheet location
-      center: [16.0, -18.0], // starting position [lng, lat] - approximate center of Namibia
-      zoom: 6 // starting zoom
+    const map = new maplibregl.Map({
+      container: mapContainer.current,
+      style: "https://demotiles.maplibre.org/style.json",
+      center: [18.5, -17.8],
+      zoom: 5,
     });
 
-    map.current.on('load', () => {
-      // Add flood zones layer
-      map.current!.addSource('flood-zones', {
-        type: 'geojson',
-        data: '/data/flood_zones.geojson'
+    map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+    map.on("load", () => {
+      // Kavango & Zambezi River Flood Buffers
+      map.addSource("riverFloodBuffers", {
+        type: "geojson",
+        data: "/data/river_flood_buffers.geojson",
       });
 
-      map.current!.addLayer({
-        id: 'flood-zones-fill',
-        type: 'fill',
-        source: 'flood-zones',
+      map.addLayer({
+        id: "river-flood-buffers-fill",
+        type: "fill",
+        source: "riverFloodBuffers",
         paint: {
-          'fill-color': [
-            'match',
-            ['get', 'risk_level'],
-            'high', '#ff0000',
-            'medium', '#ffa500',
-            'low', '#ffff00',
-            '#cccccc'
-          ],
-          'fill-opacity': 0.6
-        }
+          "fill-color": "#0284c7",
+          "fill-opacity": 0.35,
+        },
       });
 
-      // Add safe zones layer (assuming there's a safe_zones.geojson or similar)
-      // This is a placeholder - adjust based on actual data
-    });
-  });
+      map.addLayer({
+        id: "river-flood-buffers-outline",
+        type: "line",
+        source: "riverFloodBuffers",
+        paint: {
+          "line-color": "#075985",
+          "line-width": 2,
+        },
+      });
 
-  return <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />;
+      // Click popup
+      map.on("click", "river-flood-buffers-fill", (e) => {
+        const feature = e.features?.[0];
+        if (!feature) return;
+
+        new maplibregl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(
+            `<strong>${feature.properties?.river}</strong><br/>High Flood Risk Zone`
+          )
+          .addTo(map);
+      });
+
+      map.on("mouseenter", "river-flood-buffers-fill", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+
+      map.on("mouseleave", "river-flood-buffers-fill", () => {
+        map.getCanvas().style.cursor = "";
+      });
+    });
+
+    return () => map.remove();
+  }, []);
+
+  return <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />;
 }
