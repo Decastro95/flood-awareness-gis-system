@@ -1,11 +1,15 @@
 "use client";
 
 import maplibregl from "maplibre-gl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 export default function FloodMap() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+
+  const [showRivers, setShowRivers] = useState(true);
+  const [showHighGround, setShowHighGround] = useState(true);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -13,21 +17,22 @@ export default function FloodMap() {
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: "https://demotiles.maplibre.org/style.json",
-      center: [18.5, -17.8],
+      center: [18.5, -18.2],
       zoom: 5,
     });
 
+    mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl(), "top-right");
 
     map.on("load", () => {
-      // Kavango & Zambezi River Flood Buffers
+      // River flood buffers
       map.addSource("riverFloodBuffers", {
         type: "geojson",
         data: "/data/river_flood_buffers.geojson",
       });
 
       map.addLayer({
-        id: "river-flood-buffers-fill",
+        id: "river-fill",
         type: "fill",
         source: "riverFloodBuffers",
         paint: {
@@ -37,7 +42,7 @@ export default function FloodMap() {
       });
 
       map.addLayer({
-        id: "river-flood-buffers-outline",
+        id: "river-outline",
         type: "line",
         source: "riverFloodBuffers",
         paint: {
@@ -46,30 +51,87 @@ export default function FloodMap() {
         },
       });
 
-      // Click popup
-      map.on("click", "river-flood-buffers-fill", (e) => {
-        const feature = e.features?.[0];
-        if (!feature) return;
-
-        new maplibregl.Popup()
-          .setLngLat(e.lngLat)
-          .setHTML(
-            `<strong>${feature.properties?.river}</strong><br/>High Flood Risk Zone`
-          )
-          .addTo(map);
+      // High ground (elevation)
+      map.addSource("highGround", {
+        type: "geojson",
+        data: "/data/high_ground_elevation.geojson",
       });
 
-      map.on("mouseenter", "river-flood-buffers-fill", () => {
-        map.getCanvas().style.cursor = "pointer";
+      map.addLayer({
+        id: "high-ground-fill",
+        type: "fill",
+        source: "highGround",
+        paint: {
+          "fill-color": "#16a34a",
+          "fill-opacity": 0.35,
+        },
       });
 
-      map.on("mouseleave", "river-flood-buffers-fill", () => {
-        map.getCanvas().style.cursor = "";
+      map.addLayer({
+        id: "high-ground-outline",
+        type: "line",
+        source: "highGround",
+        paint: {
+          "line-color": "#166534",
+          "line-width": 2,
+        },
       });
     });
 
     return () => map.remove();
   }, []);
 
-  return <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />;
+  useEffect(() => {
+    if (!mapRef.current) return;
+    mapRef.current.setLayoutProperty(
+      "river-fill",
+      "visibility",
+      showRivers ? "visible" : "none"
+    );
+    mapRef.current.setLayoutProperty(
+      "river-outline",
+      "visibility",
+      showRivers ? "visible" : "none"
+    );
+  }, [showRivers]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    mapRef.current.setLayoutProperty(
+      "high-ground-fill",
+      "visibility",
+      showHighGround ? "visible" : "none"
+    );
+    mapRef.current.setLayoutProperty(
+      "high-ground-outline",
+      "visibility",
+      showHighGround ? "visible" : "none"
+    );
+  }, [showHighGround]);
+
+  return (
+    <>
+      <div style={{ padding: "0.5rem", background: "#ffffff" }}>
+        <label style={{ marginRight: "1rem" }}>
+          <input
+            type="checkbox"
+            checked={showRivers}
+            onChange={() => setShowRivers(!showRivers)}
+          />{" "}
+          River Flood Buffers
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={showHighGround}
+            onChange={() => setShowHighGround(!showHighGround)}
+          />{" "}
+          High-Ground / Safe Areas
+        </label>
+      </div>
+
+      <div ref={mapContainer} style={{ width: "100%", height: "90vh" }} />
+    </>
+  );
 }
