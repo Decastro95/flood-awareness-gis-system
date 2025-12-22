@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+build
+dist
+*.min.js
+*.min.css
+public/data/*.geojson
+package-lock.json
+yarn.lock

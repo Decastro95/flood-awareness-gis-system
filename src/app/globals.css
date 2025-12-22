@@ -39,3 +39,26 @@ header {
   margin-right: 8px;
   border-radius: 3px;
 }
+
+/* Hover effects for cards */
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hover-card:hover h3 {
+  color: #ffffff !important;
+}
+
+.hover-card:nth-child(1):hover {
+  background: #0f4c81 !important;
+}
+
+.hover-card:nth-child(2):hover {
+  background: #f59e0b !important;
+  color: #ffffff !important;
+}
+
+.hover-card:nth-child(2):hover p {
+  color: #ffffff !important;
+}

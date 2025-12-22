@@ -1,57 +1,147 @@
-# flood-awareness-gis-system
-A GIS-based flood awareness and risk mapping system for Northern Namibia.
-🌊 Flood Awareness & Risk Mapping System
+# Flood Awareness GIS System
 
-#REPORT#
+A web-based GIS platform for flood risk mapping and public awareness in Northern Namibia, developed as an academic prototype to support disaster preparedness and early warning systems.
 
-A GIS-Based Public Information Platform for Flood Preparedness and Response
+## 🌊 Project Overview
 
-The system is deployed on Vercel, providing a publicly accessible, cloud-hosted GIS dashboard. The deployment uses serverless API routes for flood alerts, safe zones, and weather data integration. Environment variables are securely managed through Vercel’s settings to protect API keys and database credentials.
+This system provides interactive flood risk visualization using GIS technology, integrating real-time weather data, spatial flood zones, and safe evacuation areas. Designed for the oshana floodplain environment of northern Namibia, it supports community-focused disaster risk reduction through accessible web-based tools.
 
-The system incorporates seasonal flood awareness logic, with heightened alert sensitivity during the peak flood months of January to March.
+### Key Features
 
-Schools and community facilities were selected as safe zones due to their accessibility, structural capacity, and historical use during flood displacement events.
+- **Interactive Flood Risk Map**: Visualize flood-prone zones, river buffers, and high-ground safe areas
+- **Real-time Weather Integration**: Live rainfall, temperature, and humidity data from OpenWeatherMap
+- **Safe Zones Database**: Spatially-enabled shelters and evacuation points using Supabase + PostGIS
+- **Early Warning Alerts**: Flood alerts with severity classification and population-sensitive prioritization
+- **Seasonal Awareness**: Flood season indicators with heightened sensitivity during peak months (Jan-Mar)
 
-The system is designed for the oshana floodplain environment of northern Namibia, where seasonal efundja flooding shapes settlement patterns, livelihoods, and disaster vulnerability.
+### Academic Context
 
-The system focuses on Namibia’s northern regions, particularly the Four O regions and adjoining flood-prone basins, where seasonal efundja flooding is a recurring hazard. By integrating spatial floodplain data, elevation models, population-sensitive alert prioritization, and live meteorological indicators, the dashboard provides situational awareness tailored to the environmental and socio-cultural context of northern Namibia
+Developed as part of research on "Identifying Flood Risk and Flood-Free Areas for Emergency Evacuations and Temporary Shelters in Northern Namibia Using GIS-Based Systems". Aligns with Disaster Risk Reduction (DRR) frameworks and Hazard, Vulnerability, and Capacity (HVC) models.
 
-The system implements GIS-based flood hazard visualization using GeoJSON polygon overlays rendered through MapLibre GL JS. Flood-prone zones are spatially represented and overlaid onto an interactive base map, enabling clear identification of high-risk areas.
+## 🚀 Live Demo
 
-The system integrates real-time and near–real-time meteorological data from authoritative open APIs, elevation data derived from digital elevation models, and spatial datasets representing flood-prone and flood-free zones. These datasets are visualized through an interactive GIS dashboard to support flood awareness, early warning, and evacuation planning in Northern Namibia.
+**Live System URL:** [Add your Vercel deployment URL here]
 
-The system integrates a spatially enabled database using Supabase and PostGIS to store flood-free safe zones and evacuation shelters. These locations are dynamically retrieved and visualized on the GIS dashboard using map markers, enabling users to identify nearby safe areas during flood events.
+## 📋 Table of Contents
 
-The system supports near–real-time flood monitoring through periodic data updates, simulating live sensor feeds.
+- [Installation](#installation)
+- [Usage](#usage)
+- [System Architecture](#system-architecture)
+- [Technologies](#technologies)
+- [Data Sources](#data-sources)
+- [API Endpoints](#api-endpoints)
+- [Database Schema](#database-schema)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
 
-The system integrates data from authoritative open meteorological APIs.
+## 🛠️ Installation
 
-Real-time rainfall and weather indicators are retrieved from OpenWeatherMap’s public API.
+### Prerequisites
 
-Digital Elevation Models (DEM) were used to identify high-ground areas suitable for evacuation and shelter placement.
+- Node.js 18+
+- npm or yarn
+- Supabase account
+- OpenWeatherMap API key
 
-Safe zones include public infrastructure such as schools and community halls identified through OpenStreetMap and validated through literature and historical flood response reports.
+### Setup Steps
 
-The system integrates an early warning module that displays flood alerts and rainfall indicators using a spatially enabled backend. Alerts are dynamically retrieved from the database and visually classified by severity, supporting timely public awareness and disaster preparedness.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/flood-awareness-gis-system.git
+   cd flood-awareness-gis-system
+   ```
 
-The dashboard integrates live meteorological data via OpenWeatherMap’s API. Rainfall, temperature, humidity, and weather conditions are dynamically visualized, providing near-real-time flood risk awareness. Color-coded alerts assist in identifying areas requiring immediate attention.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-A️⃣ Safe Zones & Shelters (Supabase + Map markers)
-Supports evacuation & disaster response
+3. **Environment Variables**
 
-B️⃣ Flood Alerts & Rainfall Indicators
-Supports early warning system
+   Create a `.env.local` file in the root directory:
 
-Kavango and Zambezi river flood buffer zones were implemented using GIS polygon overlays to represent areas at elevated risk of flooding during peak rainfall seasons. These buffers improve spatial awareness of river-related flood hazards in northern and north-eastern Namibia.
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_WEATHER_API_KEY=your_openweathermap_api_key
+   ```
 
-An elevation-based high-ground layer was incorporated using GIS polygon overlays to identify safer areas suitable for evacuation. Interactive layer toggle controls were implemented to allow users to selectively visualize river flood buffers and high-ground zones, improving situational awareness and usability.
+4. **Database Setup**
 
-River flood buffer zones for the Kunene, Kavango, and Zambezi rivers were implemented to represent areas of elevated flood risk due to river overflow. An elevation-based high-ground layer was incorporated to identify safer evacuation areas. Interactive toggle controls allow users to dynamically explore flood hazards and safe zones, improving usability and situational awareness.
+   Create the following tables in your Supabase database:
 
-1️⃣ SYSTEM ARCHITECTURE DIAGRAM (FOR REPORT / README)
+   ```sql
+   -- Flood Alerts Table
+   CREATE TABLE flood_alerts (
+     id SERIAL PRIMARY KEY,
+     region TEXT NOT NULL,
+     alert_level TEXT NOT NULL,
+     rainfall_mm DECIMAL,
+     message TEXT,
+     priority TEXT,
+     created_at TIMESTAMP DEFAULT NOW()
+   );
 
-You can include this exact diagram in your assignment (as text or redraw it in Draw.io / PowerPoint).
+   -- Safe Zones Table
+   CREATE TABLE safe_zones (
+     id SERIAL PRIMARY KEY,
+     name TEXT NOT NULL,
+     capacity INTEGER,
+     location GEOGRAPHY(POINT, 4326)
+   );
+   ```
 
+5. **GeoJSON Data**
+
+   Place the following GeoJSON files in `public/data/`:
+   - `flood_zones.geojson`
+   - `high_ground_elevation.geojson`
+   - `river_flood_buffers.geojson`
+   - `northern_regions.geojson`
+
+6. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📖 Usage
+
+### Navigation
+
+- **Home (/)**: Project overview and feature summary
+- **Map (/map)**: Interactive GIS dashboard with flood risk visualization
+- **Alerts (/alerts)**: Current flood alerts and rainfall monitoring
+
+### Map Controls
+
+- Toggle flood risk layers (river buffers, high-ground areas)
+- Zoom and pan for detailed regional views
+- Click on safe zone markers for shelter information
+
+### API Usage
+
+Fetch weather data for specific coordinates:
+```
+GET /api/weather?lat=-17.788&lon=15.699
+```
+
+Fetch current flood alerts:
+```
+GET /api/alerts
+```
+
+Fetch safe zones:
+```
+GET /api/safe-zones
+```
+
+## 🏗️ System Architecture
+
+```
 ┌────────────────────────────────────────────┐
 │            Public Web Browser               │
 │        (Students / Community Users)         │
@@ -70,9 +160,8 @@ You can include this exact diagram in your assignment (as text or redraw it in D
 ┌───────────────────┐   ┌────────────────────┐
 │ Next.js API Routes │   │ External APIs       │
 │ (Serverless)       │   │                    │
-│                    │   │ • OpenWeatherMap   │
-│ • /api/weather     │   │   (Rainfall, Temp) │
-│ • /api/alerts      │   │                    │
+│ • /api/weather     │   │ • OpenWeatherMap   │
+│ • /api/alerts      │   │   (Rainfall, Temp) │
 │ • /api/safe-zones  │   └────────────────────┘
 └───────────────────┘
          │
@@ -92,277 +181,185 @@ You can include this exact diagram in your assignment (as text or redraw it in D
 │ • Flood Risk Zones                          │
 │ • Elevation / High Ground Areas             │
 └────────────────────────────────────────────┘
+```
+
+## 🛠️ Technologies Used
+
+### Frontend
+- **Next.js 15**: React framework with App Router
+- **React 19**: UI library
+- **TypeScript**: Type-safe JavaScript
+- **MapLibre GL JS**: Open-source mapping library
+- **Tailwind CSS**: Utility-first CSS framework
+
+### Backend
+- **Supabase**: PostgreSQL database with real-time capabilities
+- **PostGIS**: Spatial database extension
+- **Next.js API Routes**: Serverless backend functions
+
+### External Services
+- **OpenWeatherMap API**: Real-time weather data
+- **OpenStreetMap**: Base map tiles
+
+### Development Tools
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+- **GitHub**: Version control
+- **Vercel**: Cloud deployment and CI/CD
+
+## 📊 Data Sources
+
+### Spatial Data
+- **Flood Zones**: Simulated flood risk polygons based on hydrological modeling
+- **High Ground Areas**: Elevation-derived safe zones from DEM data
+- **River Buffers**: Flood-prone areas along Kunene, Kavango, and Zambezi rivers
+- **Safe Zones**: Schools and community facilities from OpenStreetMap
+
+### Weather Data
+- **OpenWeatherMap**: Live meteorological data including:
+  - Rainfall intensity (mm/h)
+  - Temperature (°C)
+  - Humidity (%)
+  - Weather conditions
+
+### Database
+- **Supabase/PostGIS**: Spatially-enabled PostgreSQL for:
+  - Safe zone locations and capacities
+  - Flood alert records with geographic context
+
+## 🔌 API Endpoints
+
+### GET /api/weather
+Fetches current weather conditions for specified coordinates.
+
+**Parameters:**
+- `lat` (optional): Latitude (default: -17.788 for Oshakati)
+- `lon` (optional): Longitude (default: 15.699 for Oshakati)
+
+**Response:**
+```json
+{
+  "location": "Oshakati",
+  "temperature": 28.5,
+  "humidity": 65,
+  "condition": "light rain",
+  "rainfall": 2.1
+}
+```
+
+### GET /api/alerts
+Retrieves current flood alerts ordered by creation date.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "region": "Oshana",
+    "alert_level": "High",
+    "rainfall_mm": 45.2,
+    "message": "Heavy rainfall detected",
+    "priority": "High",
+    "created_at": "2025-01-15T10:30:00Z"
+  }
+]
+```
+
+### GET /api/safe-zones
+Returns safe zone locations with capacity information.
+
+**Response:**
+```json
+[
+  {
+    "name": "Oshakati Primary School",
+    "capacity": 500,
+    "longitude": 15.699,
+    "latitude": -17.788
+  }
+]
+```
+
+## 🗄️ Database Schema
+
+### flood_alerts
+| Field | Type | Description |
+|-------|------|-------------|
+| id | SERIAL | Primary key |
+| region | TEXT | Affected region |
+| alert_level | TEXT | Alert severity (High/Moderate/Low) |
+| rainfall_mm | DECIMAL | Rainfall amount |
+| message | TEXT | Alert description |
+| priority | TEXT | Population exposure priority |
+| created_at | TIMESTAMP | Creation timestamp |
 
-The system follows a cloud-based architecture where a Next.js frontend deployed on Vercel consumes serverless API routes that integrate spatial datasets, live weather services, and a PostGIS-enabled Supabase backend.
+### safe_zones
+| Field | Type | Description |
+|-------|------|-------------|
+| id | SERIAL | Primary key |
+| name | TEXT | Shelter/facility name |
+| capacity | INTEGER | Estimated capacity |
+| location | GEOGRAPHY | Point geometry (PostGIS) |
 
-The system is deployed on Vercel and is publicly accessible via a live URL, allowing real-time demonstration of the flood awareness dashboard, GIS layers, and weather integration.
+## 🚀 Deployment
 
-A user-friendly public information dashboard designed to improve situational awareness and decision-making during flood events.
+### Vercel Deployment
 
-2️⃣ LIVE URL (HOW TO PRESENT IT)
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on git push
 
-In your README or assignment, include this section:
+### Environment Variables
 
-Live System URL:
-https://your-project-name.vercel.app
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_WEATHER_API_KEY=your-openweathermap-key
+```
 
-3️⃣ WEATHER INTEGRATION (OPENWEATHERMAP)
-What is integrated
+## 🤝 Contributing
 
-Live rainfall (mm)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Temperature
+### Development Guidelines
 
-Humidity
+- Use TypeScript for all new code
+- Follow ESLint configuration
+- Add tests for new features
+- Update documentation for API changes
+- Use conventional commit messages
 
-Weather condition (rain, clouds, storms)
+## 📄 License
 
-How it works (technical but simple)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-OpenWeatherMap API provides real-time weather data
+## ⚠️ Disclaimer
 
-Data is fetched via a Next.js API route
+**This system is an academic prototype and should not replace official government flood warning systems.**
 
-The dashboard updates automatically every 60 seconds
+- Not intended for operational emergency response
+- All data is simulated or derived from open sources
+- Users should consult official authorities for flood warnings
+- Developers assume no liability for use of this system
 
-Rainfall values are used as flood risk indicators
+## 👨‍🎓 Author
 
-Example flow:
-OpenWeatherMap API
-      ↓
-/api/weather (Next.js)
-      ↓
-Weather Widget (Dashboard)
+**Immanuel T Ndatipo**
+- Programme: Bachelor of Science in Computer Science & Information Technology (Honours) NQA LEVEL 7
+- Institution: Triumphant College (Distance Programme)
+- Year: 2025
 
-The system integrates live meteorological data from OpenWeatherMap through a serverless API. Rainfall intensity, temperature, and humidity are dynamically displayed and updated periodically, supporting early flood warning and situational awareness.
+## 📚 References
 
-4️⃣ FLOOD LAYERS (GIS CORE OF YOUR PROJECT)
-Flood Risk Zones
+- Namibia Flood Risk Research (Participatory Early Warning)
+- Disaster Risk Reduction (DRR) Framework
+- GIS-based Flood Hazard Mapping Principles
+- OpenStreetMap and OpenWeatherMap APIs
 
-Stored as GeoJSON polygon layers
+---
 
-Represent flood-prone low-lying areas
-
-Displayed in red on the map
-
-High Ground / Safe Areas
-
-Derived from Digital Elevation Models (DEM)
-
-Areas with higher elevation classified as safer
-
-Used to support evacuation planning
-
-Safe Zones (Schools & Halls)
-
-Stored in Supabase (PostGIS)
-
-Displayed as green markers
-
-Include:
-
-Schools
-
-Community halls
-
-Shelters
-
-How layers are combined
-Base Map (MapLibre)
-   + Flood Risk Polygons
-   + Elevation / High Ground Overlay
-   + Safe Zone Markers
-
-
-📌:
-
-Flood-prone zones are visualized using GeoJSON polygon overlays, while flood-free safe zones such as schools and community halls are represented as spatial point features. These GIS layers enable clear identification of high-risk areas and suitable evacuation locations.
-
-📌 Project Overview
-
-Flooding is a recurring natural hazard in Northern Namibia, particularly affecting regions such as Ovamboland (Oshana, Oshikoto, Ohangwena, Omusati), Kavango, Kunene, and Zambezi. These flood events frequently result in displacement of communities, damage to infrastructure, and disruption of livelihoods.
-
-This project implements a web-based GIS flood awareness system designed to provide public access to flood risk information, improve early awareness, and support emergency preparedness and evacuation planning. The system visualizes flood-prone zones, safe areas for evacuation, and near–real-time environmental indicators using interactive digital maps.
-
-The system serves as a functional prototype developed for academic purposes and aligns with the research proposal titled:
-
-“Identifying Flood Risk and Flood-Free Areas for Emergency Evacuations and Temporary Shelters in Northern Namibia Using GIS-Based Systems”
-
-🎯 Project Aim
-
-The main aim of this project is to develop a user-friendly, GIS-based flood risk management platform that enhances disaster preparedness and response by:
-
-Identifying flood-prone zones
-
-Delineating flood-free areas suitable for evacuation and shelters
-
-Providing spatial flood awareness to the public and decision-makers
-
-✅ Key Objectives
-
-Visualize historical and simulated flood risk zones using GIS mapping techniques
-
-Display safe zones and temporary shelter locations
-
-Integrate near–real-time rainfall or flood indicator data
-
-Demonstrate how GIS technology can support early warning and evacuation planning
-
-Provide a scalable and accessible web-based prototype for flood awareness
-
-🗺️ System Features
-
-🌍 Interactive Web Map
-
-Zoomable and pannable map interface
-
-Base maps for geographic context
-
-🔴 Flood Risk Zones
-
-Flood-prone areas visualized using GeoJSON polygon layers
-
-Risk classification (e.g., High, Medium)
-
-🟢 Flood-Free / Safe Zones
-
-Locations suitable for evacuation and temporary shelters
-
-Stored as spatial point data
-
-📡 Simulated Live Data Feeds
-
-Rainfall or flood indicators updated periodically
-
-Demonstrates real-time monitoring capability
-
-🗄️ Spatial Database
-
-Centralized data storage using PostGIS-enabled PostgreSQL
-
-Supports spatial queries for proximity and risk analysis
-
-🧠 System Architecture
-Frontend (Next.js / React)
-│
-│── Interactive Map (MapLibre / Leaflet)
-│── Flood Risk Layers (GeoJSON)
-│── Safe Zones & Alerts Dashboard
-│
-Backend (Supabase)
-│
-│── PostgreSQL + PostGIS
-│── Flood Reports Table
-│── Safe Zones Table
-│── REST & Realtime APIs
-│
-Deployment
-│
-│── GitHub (Version Control)
-│── Vercel (Hosting & CI/CD)
-│── CodeSandbox (Prototyping)
-
-🛠️ Technologies Used
-Frontend
-
-Next.js (React Framework)
-
-MapLibre GL JS / Leaflet
-
-TypeScript
-
-Backend
-
-Supabase
-
-PostgreSQL
-
-PostGIS (Spatial Extensions)
-
-Realtime APIs
-
-Deployment & Tools
-
-GitHub – Source code management
-
-Vercel – Cloud deployment
-
-CodeSandbox – Rapid prototyping
-
-🧪 Data Sources (Academic & Open)
-
-OpenStreetMap (base map and settlements)
-
-Open satellite-derived flood datasets (e.g., Sentinel, Copernicus – where applicable)
-
-Simulated hydrological and rainfall data for demonstration purposes
-
-⚠️ Note: Live sensor feeds are simulated to demonstrate system capability in an academic environment.
-
-📊 Database Design (Supabase)
-Flood Reports Table
-Field	Description
-id	Unique identifier
-location	Geographic point (PostGIS)
-severity	Flood severity level
-description	Flood details
-created_at	Timestamp
-Safe Zones Table
-Field	Description
-id	Unique identifier
-name	Shelter or safe area name
-location	Geographic point
-capacity	Estimated shelter capacity
-🔍 GIS & Spatial Analysis Concepts Applied
-
-Spatial data visualization using GeoJSON
-
-Overlay analysis (flood zones vs settlements)
-
-Proximity analysis (safe zones near affected areas)
-
-GIS-based risk mapping principles
-
-Disaster Risk Reduction (DRR) framework alignment
-
-📚 Academic Alignment
-
-This project aligns with the following concepts outlined in the research proposal:
-
-Disaster Risk Reduction (DRR)
-
-Hazard, Vulnerability, and Capacity (HVC) model
-
-GIS-based flood hazard mapping
-
-Community-focused disaster preparedness
-
-Early warning and evacuation planning
-
-🚀 Deployment
-
-The system is publicly accessible via Vercel and automatically redeploys on every GitHub update.
-
-🔗 Live Demo: (add your Vercel URL here)
-
-📂 GitHub Repository: (this repository)
-
-🔐 Ethics & Data Considerations
-
-No personal or sensitive data is collected
-
-All spatial data used is open, simulated, or anonymized
-
-System is designed strictly for educational and research purposes
-
-🧾 Disclaimer
-
-This project is a prototype developed for academic purposes.
-It is not an official flood warning system and should not replace government-issued alerts.
-
-👨‍🎓 Author
-
-Name: Immanuel T Ndatipo
-Programme: Bachelor of Science in Computer Science & Information Technology (Honours) NQA LEVEL 7
-Institution: Triumphant College (Distance Programme)
-Year: 2025
+*"This map supports flood awareness and preparedness. It does not replace official flood warnings issued by authorities."*

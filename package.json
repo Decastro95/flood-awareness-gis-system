@@ -2,11 +2,20 @@
   "name": "flood-awareness-gis-system",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "description": "A web-based GIS platform for flood risk mapping and public awareness in Northern Namibia",
+  "author": "Immanuel T Ndatipo",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No tests specified\" && exit 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -16,10 +25,29 @@
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "eslint": "9.39.2",
     "eslint-config-next": "16.1.0",
+    "prettier": "^3.0.0",
     "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "gis",
+    "flood-awareness",
+    "namibia",
+    "disaster-preparedness",
+    "nextjs",
+    "maplibre",
+    "supabase"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Decastro95/flood-awareness-gis-system"
   }
 }
