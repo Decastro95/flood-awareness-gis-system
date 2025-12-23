@@ -32,14 +32,48 @@ export default function WeatherPanel() {
     fetchWeather();
   }, []);
 
-  if (!weather) return <div className="panel">Loading weather…</div>;
+  if (!weather) return (
+    <div style={{
+      background: "white",
+      borderRadius: "12px",
+      padding: "1.5rem",
+      marginBottom: "1.5rem",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      border: "1px solid #e2e8f0"
+    }}>
+      <h3 style={{ margin: "0 0 1rem 0", color: "#1e293b", fontSize: "1.25rem" }}>🌦️ Current Weather</h3>
+      <p style={{ color: "#64748b" }}>Loading weather data...</p>
+    </div>
+  );
 
   return (
-    <div className="panel">
-      <h3>🌦️ Current Weather</h3>
-      <p><strong>Temperature:</strong> {weather.temp} °C</p>
-      <p><strong>Rain (last hour):</strong> {weather.rain} mm</p>
-      <p><strong>Condition:</strong> {weather.description}</p>
+    <div style={{
+      background: "white",
+      borderRadius: "12px",
+      padding: "1.5rem",
+      marginBottom: "1.5rem",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      border: "1px solid #e2e8f0"
+    }}>
+      <h3 style={{ margin: "0 0 1rem 0", color: "#1e293b", fontSize: "1.25rem" }}>🌦️ Current Weather</h3>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
+        <span style={{ fontSize: "2rem", marginRight: "0.5rem" }}>
+          {weather.temp > 25 ? "☀️" : weather.temp > 15 ? "⛅" : "🌧️"}
+        </span>
+        <div>
+          <p style={{ margin: "0", fontSize: "1.5rem", fontWeight: "bold", color: "#1e293b" }}>
+            {weather.temp}°C
+          </p>
+          <p style={{ margin: "0", fontSize: "0.9rem", color: "#64748b", textTransform: "capitalize" }}>
+            {weather.description}
+          </p>
+        </div>
+      </div>
+      <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "1rem" }}>
+        <p style={{ margin: "0", fontSize: "0.9rem", color: "#64748b" }}>
+          <strong>Rain (last hour):</strong> {weather.rain} mm
+        </p>
+      </div>
     </div>
   );
 }

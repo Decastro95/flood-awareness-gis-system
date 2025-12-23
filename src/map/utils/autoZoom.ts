@@ -1,4 +1,4 @@
-import { Map } from "maplibre-gl";
+import { Map } from "mapbox-gl";
 
 export function zoomToFloodHotspot(map: Map, hotspot: string) {
   const locations: Record<string, [number, number, number]> = {

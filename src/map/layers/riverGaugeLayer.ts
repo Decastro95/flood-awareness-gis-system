@@ -1,12 +1,11 @@
-import { Map } from "maplibre-gl";
-import gauges from "@/data/riverGauges.geojson";
+import { Map } from "mapbox-gl";
 
 export function addRiverGaugeLayer(map: Map) {
   if (map.getSource("river-gauges")) return;
 
   map.addSource("river-gauges", {
     type: "geojson",
-    data: gauges as any,
+    data: "/data/riverGauges.geojson",
   });
 
   map.addLayer({

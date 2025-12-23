@@ -18,13 +18,15 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.1.2",
     "@supabase/supabase-js": "^2.39.0",
-    "maplibre-gl": "^5.15.0",
+    "mapbox-gl": "^3.17.0",
     "next": "^15.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@types/mapbox__mapbox-gl-geocoder": "^5.1.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

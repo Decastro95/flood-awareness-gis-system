@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Map } from "maplibre-gl";
+import { Map } from "mapbox-gl";
 import { addRainLayer } from "@/map/layers/rainLayer";
 
 type Props = {

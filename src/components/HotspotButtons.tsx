@@ -1,6 +1,6 @@
 "use client";
 
-import { Map } from "maplibre-gl";
+import { Map } from "mapbox-gl";
 import { zoomToFloodHotspot } from "@/map/utils/autoZoom";
 
 type Props = {

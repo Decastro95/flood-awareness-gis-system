@@ -1,12 +1,14 @@
 "use client";
 
-import maplibregl from "maplibre-gl";
+import mapboxgl from "mapbox-gl";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { useEffect, useRef, useState } from "react";
-import "maplibre-gl/dist/maplibre-gl.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function FloodMap() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
 
   const [showRivers, setShowRivers] = useState(true);
   const [showHighGround, setShowHighGround] = useState(true);
@@ -31,18 +33,30 @@ export default function FloodMap() {
   useEffect(() => {
     if (!mapContainer.current || loading) return;
 
-    const map = new maplibregl.Map({
+    // Set Mapbox access token
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+    const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "https://demotiles.maplibre.org/style.json",
+      style: "mapbox://styles/mapbox/streets-v12",
       center: [17.5, -18.0],
       zoom: 5,
     });
 
     mapRef.current = map;
-    map.addControl(new maplibregl.NavigationControl(), "top-right");
+    map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+    // Add geocoder
+    const geocoder = new MapboxGeocoder({
+      accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN!,
+      placeholder: "Search for places in Namibia...",
+      countries: "na", // Namibia
+      limit: 5
+    });
+    map.addControl(geocoder, "top-left");
 
     // Add scale control
-    map.addControl(new maplibregl.ScaleControl(), "bottom-left");
+    map.addControl(new mapboxgl.ScaleControl(), "bottom-left");
 
     map.on("load", () => {
       // River flood buffers
@@ -122,12 +136,12 @@ export default function FloodMap() {
 
         // Add markers for safe zones
         safeZones.forEach((zone) => {
-          const marker = new maplibregl.Marker({ color: "#16a34a" })
+          const marker = new mapboxgl.Marker({ color: "#16a34a" })
             .setLngLat([zone.longitude, zone.latitude])
             .addTo(map);
 
           // Create popup
-          const popup = new maplibregl.Popup({ offset: 25 }).setHTML(
+          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
             `<div style="font-family: Arial, sans-serif; max-width: 200px;">
               <h4 style="margin: 0 0 8px 0; color: #16a34a;">${zone.name}</h4>
               <p style="margin: 0; font-size: 14px;">Capacity: ${zone.capacity} people</p>
