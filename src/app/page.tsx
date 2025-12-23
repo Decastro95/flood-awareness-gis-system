@@ -91,74 +91,38 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+    <div className="app-container">
       {/* Hero Header */}
-      <header style={{
-        background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)",
-        color: "white",
-        padding: "2rem",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"2\" fill=\"rgba(255,255,255,0.1)\"/><circle cx=\"80\" cy=\"80\" r=\"1\" fill=\"rgba(255,255,255,0.1)\"/><circle cx=\"60\" cy=\"30\" r=\"1.5\" fill=\"rgba(255,255,255,0.1)\"/></svg>')",
-          opacity: 0.3
-        }}></div>
-        <div style={{ position: "relative", zIndex: 1 }}>
+      <header className="app-header">
+        <div style={{ position: "relative", zIndex: 1, textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
           <h1 style={{
-            fontSize: "3rem",
+            fontSize: "3.5rem",
             fontWeight: "bold",
-            margin: "0 0 1rem 0",
-            textShadow: "0 2px 4px rgba(0,0,0,0.3)"
+            margin: "0 0 1.5rem 0",
+            textShadow: "0 2px 4px rgba(0, 0, 0, 0.3)"
           }}>
             🌊 Flood Awareness GIS System
           </h1>
           <p style={{
-            fontSize: "1.25rem",
-            margin: "0 0 2rem 0",
+            fontSize: "1.4rem",
+            margin: "0 0 3rem 0",
             opacity: 0.9,
-            maxWidth: "600px",
-            marginLeft: "auto",
-            marginRight: "auto"
+            lineHeight: 1.4
           }}>
             Interactive flood risk mapping and public awareness platform for Northern Namibia
           </p>
-          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: "1.5rem", flexWrap: "wrap" }}>
             <Link
               href="/map"
-              style={{
-                background: "white",
-                color: "#1e3a8a",
-                padding: "1rem 2rem",
-                borderRadius: "8px",
-                textDecoration: "none",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-                transition: "transform 0.2s"
-              }}
+              className="btn btn-primary"
+              style={{ fontSize: "1.1rem", padding: "1rem 2rem" }}
             >
               🗺️ View Interactive Map
             </Link>
             <Link
               href="/alerts"
-              style={{
-                background: "rgba(255,255,255,0.2)",
-                color: "white",
-                padding: "1rem 2rem",
-                borderRadius: "8px",
-                textDecoration: "none",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                border: "2px solid white",
-                transition: "background 0.2s"
-              }}
+              className="btn btn-secondary"
+              style={{ fontSize: "1.1rem", padding: "1rem 2rem" }}
             >
               🚨 Emergency Alerts
             </Link>
@@ -175,34 +139,43 @@ export default function HomePage() {
             width: "100%",
           }}
         />
+
         {/* Overlay Info */}
-        <div style={{
+        <div className="card" style={{
           position: "absolute",
-          bottom: "20px",
-          left: "20px",
-          background: "white",
-          padding: "1.5rem",
-          borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-          maxWidth: "300px"
+          bottom: "30px",
+          left: "30px",
+          maxWidth: "350px",
+          border: "1px solid #e5e7eb"
         }}>
-          <h3 style={{ margin: "0 0 1rem 0", color: "#1e3a8a", fontSize: "1.25rem" }}>
+          <h3 style={{ margin: "0 0 1rem 0", color: "#1e3a8a", fontSize: "1.4rem", fontWeight: "600" }}>
             🏞️ Northern Namibia Overview
           </h3>
-          <p style={{ margin: "0 0 1rem 0", fontSize: "0.9rem", color: "#64748b" }}>
-            This map shows flood risk zones, terrain elevation, and safe areas across the region.
+          <p style={{ margin: "0 0 1.5rem 0", fontSize: "1rem", color: "#64748b", lineHeight: 1.5 }}>
+            This interactive map shows flood risk zones, terrain elevation, and safe areas across the region.
           </p>
-          <div style={{ fontSize: "0.8rem", color: "#6b7280" }}>
-            <strong>Legend:</strong>
-            <div style={{ display: "flex", alignItems: "center", marginTop: "0.5rem" }}>
+          <div style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+            <div style={{ fontWeight: "600", marginBottom: "0.75rem", color: "#374151" }}>Map Legend:</div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
               <div style={{
-                width: "12px",
-                height: "12px",
+                width: "16px",
+                height: "16px",
                 background: "linear-gradient(to right, #edf8fb, #006d2c)",
-                borderRadius: "2px",
-                marginRight: "0.5rem"
+                borderRadius: "3px",
+                flexShrink: 0
               }}></div>
               <span>Flood Risk Zones</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{
+                width: "16px",
+                height: "16px",
+                background: "#16a34a",
+                opacity: 0.7,
+                borderRadius: "3px",
+                flexShrink: 0
+              }}></div>
+              <span>High Ground Safe Areas</span>
             </div>
           </div>
         </div>

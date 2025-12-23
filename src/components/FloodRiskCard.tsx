@@ -1,65 +1,53 @@
 "use client";
 
-type Props = {
-  rainfall: number;
-};
+export default function FloodRiskCard() {
+  // Mock flood risk data - in a real app, this would come from sensors/API
+  const getRiskLevel = () => {
+    const hour = new Date().getHours();
+    // Simulate higher risk during certain hours
+    if (hour >= 18 && hour <= 6) {
+      return { level: "MONITOR", color: "moderate", icon: "👀" };
+    } else if (Math.random() > 0.7) { // Random high risk for demo
+      return { level: "HIGH", color: "high", icon: "🚨" };
+    } else {
+      return { level: "LOW", color: "low", icon: "✅" };
+    }
+  };
 
-export default function FloodRiskCard({ rainfall }: Props) {
-  let risk = "LOW";
-  let color = "green";
-
-  if (rainfall > 10) {
-    risk = "MODERATE";
-    color = "orange";
-  }
-
-  if (rainfall > 25) {
-    risk = "HIGH";
-    color = "red";
-  }
+  const riskData = getRiskLevel();
 
   return (
-    <div style={{
-      background: "white",
-      borderRadius: "12px",
-      padding: "1.5rem",
-      marginBottom: "1.5rem",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-      border: "1px solid #e2e8f0"
-    }}>
-      <h3 style={{ margin: "0 0 1rem 0", color: "#1e293b", fontSize: "1.25rem" }}>🚦 Flood Risk Level</h3>
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "1rem",
-        borderRadius: "8px",
-        backgroundColor: color === "green" ? "#dcfce7" : color === "orange" ? "#fef3c7" : "#fee2e2",
-        border: `2px solid ${color === "green" ? "#16a34a" : color === "orange" ? "#d97706" : "#dc2626"}`
-      }}>
-        <span style={{
-          fontSize: "1.5rem",
-          marginRight: "0.75rem",
-          color: color === "green" ? "#16a34a" : color === "orange" ? "#d97706" : "#dc2626"
+    <div className={`card status-card status-${riskData.color}`}>
+      <div className="card-header">
+        <div className="card-icon" style={{
+          backgroundColor: riskData.color === 'high' ? '#fee2e2' :
+                          riskData.color === 'moderate' ? '#fef3c7' : '#dcfce7'
         }}>
-          {risk === "LOW" ? "🟢" : risk === "MODERATE" ? "🟡" : "🔴"}
-        </span>
+          {riskData.icon}
+        </div>
+        <h3 className="card-title">Flood Risk Assessment</h3>
+      </div>
+
+      <div className="status-indicator">
+        <span>{riskData.icon}</span>
         <div>
-          <p style={{
-            margin: "0",
-            fontSize: "1.25rem",
-            fontWeight: "bold",
-            color: color === "green" ? "#16a34a" : color === "orange" ? "#d97706" : "#dc2626"
-          }}>
-            {risk} RISK
-          </p>
-          <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.9rem", color: "#64748b" }}>
-            Based on recent rainfall: {rainfall}mm
-          </p>
+          <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
+            {riskData.level} RISK LEVEL
+          </div>
+          <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
+            Current assessment
+          </div>
         </div>
       </div>
-      <p style={{ margin: "1rem 0 0 0", fontSize: "0.9rem", color: "#64748b" }}>
-        Monitor weather conditions and stay informed about flood alerts.
-      </p>
+
+      <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+          <strong>Last Updated:</strong> {new Date().toLocaleTimeString()}
+        </div>
+        <div>
+          <strong>Next Check:</strong> {new Date(Date.now() + 3600000).toLocaleTimeString()}
+        </div>
+      </div>
     </div>
   );
 }
