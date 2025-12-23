@@ -172,50 +172,6 @@ export default function FloodMap() {
     // Cleanup
     return () => map.remove();
   }, [loading, safeZones, currentMapStyle]);
-      if (safeZones.length > 0) {
-        const safeZonesGeoJSON: GeoJSON.FeatureCollection = {
-          type: "FeatureCollection",
-          features: safeZones.map((zone, index) => ({
-            type: "Feature",
-            properties: {
-              name: zone.name,
-              capacity: zone.capacity,
-              id: index,
-            },
-            geometry: {
-              type: "Point",
-              coordinates: [zone.longitude, zone.latitude],
-            },
-          })),
-        };
-
-        map.addSource("safeZones", {
-          type: "geojson",
-          data: safeZonesGeoJSON,
-        });
-
-        // Add markers for safe zones
-        safeZones.forEach((zone) => {
-          const marker = new mapboxgl.Marker({ color: "#16a34a" })
-            .setLngLat([zone.longitude, zone.latitude])
-            .addTo(map);
-
-          // Create popup
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-            `<div style="font-family: Arial, sans-serif; max-width: 200px;">
-              <h4 style="margin: 0 0 8px 0; color: #16a34a;">${zone.name}</h4>
-              <p style="margin: 0; font-size: 14px;">Capacity: ${zone.capacity} people</p>
-              <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">Safe evacuation zone</p>
-            </div>`
-          );
-
-          marker.setPopup(popup);
-        });
-      }
-    });
-
-    return () => map.remove();
-  }, [loading, safeZones]);
 
   useEffect(() => {
     if (!mapRef.current) return;

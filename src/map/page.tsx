@@ -3,6 +3,7 @@ import FloodMap from "@/components/FloodMap";
 import FloodSeasonIndicator from "@/components/FloodSeasonIndicator";
 import FloodRiskCard from "@/components/FloodRiskCard";
 import EmergencyContacts from "@/components/EmergencyContacts";
+import HistoricalSatelliteImages from "@/components/HistoricalSatelliteImages";
 
 export default function MapPage() {
   return (
@@ -29,7 +30,8 @@ export default function MapPage() {
         <div className="dashboard-container">
           <aside className="dashboard-sidebar">
             <FloodSeasonIndicator />
-            <FloodRiskCard rainfall={12} />
+            <FloodRiskCard />
+            <HistoricalSatelliteImages />
             <EmergencyContacts />
           </aside>
 
