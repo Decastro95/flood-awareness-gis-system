@@ -1,5 +1,5 @@
 import Link from "next/link";
-import FloodMap from "@/components/FloodMap";
+import EnhancedFloodMap from "@/components/EnhancedFloodMap";
 import FloodSeasonIndicator from "@/components/FloodSeasonIndicator";
 import FloodRiskCard from "@/components/FloodRiskCard";
 import EmergencyContacts from "@/components/EmergencyContacts";
@@ -36,7 +36,7 @@ export default function MapPage() {
           </aside>
 
           <main className="dashboard-main">
-            <FloodMap />
+            <EnhancedFloodMap />
           </main>
         </div>
       </div>

@@ -10,27 +10,17 @@ import MapStyleSelector from "./MapStyleSelector";
 export default function FloodMap() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const animationRef = useRef<number | null>(null);
 
   const [showRivers, setShowRivers] = useState(true);
   const [showHighGround, setShowHighGround] = useState(true);
   const [showSafeZones, setShowSafeZones] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [safeZones, setSafeZones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentMapStyle, setCurrentMapStyle] = useState("mapbox://styles/mapbox/streets-v12");
-
-  // Fetch safe zones data
-  useEffect(() => {
-    fetch("/api/safe-zones")
-      .then(res => res.json())
-      .then(data => {
-        setSafeZones(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error("Failed to fetch safe zones:", error);
-        setLoading(false);
-      });
-  }, []);
+  const [currentMapStyle, setCurrentMapStyle] = useState("mapbox://styles/mapbox/satellite-streets-v12");
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [isGlobeView, setIsGlobeView] = useState(false);
 
   // Fetch safe zones data
   useEffect(() => {
@@ -51,6 +41,88 @@ export default function FloodMap() {
     if (mapRef.current) {
       mapRef.current.setStyle(newStyle);
     }
+  };
+
+  // Globe spinning animation
+  const startSpinning = () => {
+    if (!mapRef.current || isSpinning) return;
+
+    setIsSpinning(true);
+    const spin = () => {
+      if (!mapRef.current) return;
+
+      const bearing = mapRef.current.getBearing() + 0.5;
+      mapRef.current.setBearing(bearing);
+
+      if (isSpinning) {
+        animationRef.current = requestAnimationFrame(spin);
+      }
+    };
+    spin();
+  };
+
+  const stopSpinning = () => {
+    setIsSpinning(false);
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+  };
+
+  // Fly to specific locations
+  const flyToLocation = (lng: number, lat: number, zoom: number = 10) => {
+    if (!mapRef.current) return;
+
+    mapRef.current.flyTo({
+      center: [lng, lat],
+      zoom: zoom,
+      duration: 2000,
+      essential: true
+    });
+  };
+
+  // Toggle globe/flat view
+  const toggleGlobeView = () => {
+    if (!mapRef.current) return;
+
+    const newProjection = isGlobeView ? 'mercator' : 'globe';
+    mapRef.current.setProjection(newProjection);
+    setIsGlobeView(!isGlobeView);
+
+    if (!isGlobeView) {
+      // Switch to globe view
+      mapRef.current.setZoom(1);
+      mapRef.current.setCenter([0, 0]);
+    } else {
+      // Switch back to flat view
+      mapRef.current.setZoom(5);
+      mapRef.current.setCenter([17.5, -18.0]);
+    }
+  };
+
+  // Animate route (example: flood monitoring path)
+  const animateRoute = () => {
+    if (!mapRef.current) return;
+
+    const route = [
+      { lng: 14.5, lat: -17.5 }, // Rundu
+      { lng: 16.5, lat: -17.8 }, // Oshakati
+      { lng: 18.5, lat: -17.2 }, // Ondangwa
+      { lng: 17.0, lat: -18.5 }, // Windhoek area
+    ];
+
+    let index = 0;
+    const animate = () => {
+      if (index >= route.length) return;
+
+      const point = route[index];
+      flyToLocation(point.lng, point.lat, 8);
+
+      index++;
+      setTimeout(animate, 3000); // 3 seconds between points
+    };
+
+    animate();
   };
 
   useEffect(() => {

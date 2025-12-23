@@ -1,95 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function HomePage() {
-  useEffect(() => {
-    // Set Mapbox access token
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-
-    // Create map
-    const map = new mapboxgl.Map({
-      container: "map",
-      style: "mapbox://styles/mapbox/light-v11",
-      center: [15.0, -17.8], // Northern Namibia (Oshana floodplain)
-      zoom: 7,
-      pitch: 45,
-      bearing: 0,
-      antialias: true,
-    });
-
-    // Add controls
-    map.addControl(new mapboxgl.NavigationControl(), "top-right");
-
-    map.on("load", () => {
-      /* ===============================
-         FLOOD ZONES (ESRI-STYLE COLORS)
-         =============================== */
-      map.addSource("flood-zones", {
-        type: "geojson",
-        data: "/data/flood_zones.geojson",
-      });
-
-      map.addLayer({
-        id: "flood-zones-layer",
-        type: "fill",
-        source: "flood-zones",
-        paint: {
-          "fill-color": [
-            "step",
-            ["get", "severity"],
-            "#edf8fb", // very low
-            1, "#b2e2e2",
-            2, "#66c2a4",
-            3, "#2ca25f",
-            4, "#006d2c" // extreme
-          ],
-          "fill-opacity": 0.65,
-          "fill-outline-color": "#00441b",
-        },
-      });
-
-      /* ===============================
-         TERRAIN + HILLSHADE (HIGH GROUND)
-         =============================== */
-      map.addSource("mapbox-dem", {
-        type: "raster-dem",
-        url: "mapbox://mapbox.terrain-rgb",
-        tileSize: 512,
-        maxzoom: 14,
-      });
-
-      map.setTerrain({
-        source: "mapbox-dem",
-        exaggeration: 1.3,
-      });
-
-      map.addLayer({
-        id: "hillshade",
-        type: "hillshade",
-        source: "mapbox-dem",
-        paint: {
-          "hillshade-exaggeration": 0.4,
-        },
-      });
-
-      /* ===============================
-         SMOOTH ENTRY (ARCGIS FEEL)
-         =============================== */
-      map.easeTo({
-        zoom: 8,
-        pitch: 50,
-        duration: 2000,
-      });
-    });
-
-    // Cleanup
-    return () => map.remove();
-  }, []);
-
   return (
     <div className="app-container">
       {/* Hero Header */}
@@ -120,6 +33,13 @@ export default function HomePage() {
               🗺️ View Interactive Map
             </Link>
             <Link
+              href="/globe"
+              className="btn btn-secondary"
+              style={{ fontSize: "1.1rem", padding: "1rem 2rem" }}
+            >
+              🌍 Globe View
+            </Link>
+            <Link
               href="/alerts"
               className="btn btn-secondary"
               style={{ fontSize: "1.1rem", padding: "1rem 2rem" }}
@@ -130,56 +50,76 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Map Section */}
-      <div style={{ flex: 1, position: "relative" }}>
-        <div
-          id="map"
-          style={{
-            height: "100%",
-            width: "100%",
-          }}
-        />
+      {/* Features Section */}
+      <main className="main-content" style={{ padding: "4rem 2rem", background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "600", color: "#1e293b", marginBottom: "1rem" }}>
+              Advanced Flood Risk Management
+            </h2>
+            <p style={{ fontSize: "1.2rem", color: "#64748b", maxWidth: "600px", margin: "0 auto", lineHeight: 1.6 }}>
+              Leveraging cutting-edge GIS technology and real-time data to protect communities in Northern Namibia from flood disasters.
+            </p>
+          </div>
 
-        {/* Overlay Info */}
-        <div className="card" style={{
-          position: "absolute",
-          bottom: "30px",
-          left: "30px",
-          maxWidth: "350px",
-          border: "1px solid #e5e7eb"
-        }}>
-          <h3 style={{ margin: "0 0 1rem 0", color: "#1e3a8a", fontSize: "1.4rem", fontWeight: "600" }}>
-            🏞️ Northern Namibia Overview
-          </h3>
-          <p style={{ margin: "0 0 1.5rem 0", fontSize: "1rem", color: "#64748b", lineHeight: 1.5 }}>
-            This interactive map shows flood risk zones, terrain elevation, and safe areas across the region.
-          </p>
-          <div style={{ fontSize: "0.9rem", color: "#6b7280" }}>
-            <div style={{ fontWeight: "600", marginBottom: "0.75rem", color: "#374151" }}>Map Legend:</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-              <div style={{
-                width: "16px",
-                height: "16px",
-                background: "linear-gradient(to right, #edf8fb, #006d2c)",
-                borderRadius: "3px",
-                flexShrink: 0
-              }}></div>
-              <span>Flood Risk Zones</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem", marginBottom: "4rem" }}>
+            <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
+              <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🗺️</div>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem", color: "#1e293b" }}>
+                Interactive Mapping
+              </h3>
+              <p style={{ color: "#64748b", lineHeight: 1.6 }}>
+                Explore detailed flood risk zones, terrain elevation, and safe evacuation routes with our advanced interactive map interface.
+              </p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{
-                width: "16px",
-                height: "16px",
-                background: "#16a34a",
-                opacity: 0.7,
-                borderRadius: "3px",
-                flexShrink: 0
-              }}></div>
-              <span>High Ground Safe Areas</span>
+
+            <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
+              <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🌍</div>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem", color: "#1e293b" }}>
+                Global Perspective
+              </h3>
+              <p style={{ color: "#64748b", lineHeight: 1.6 }}>
+                View flood patterns from a global perspective with our 3D globe visualization, featuring spinning animations and regional focus.
+              </p>
+            </div>
+
+            <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
+              <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🚨</div>
+              <h3 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem", color: "#1e293b" }}>
+                Real-time Alerts
+              </h3>
+              <p style={{ color: "#64748b", lineHeight: 1.6 }}>
+                Stay informed with real-time weather updates, flood warnings, and emergency contact information for rapid response.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center", padding: "3rem", background: "white", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)" }}>
+            <h3 style={{ fontSize: "2rem", fontWeight: "600", color: "#1e293b", marginBottom: "1rem" }}>
+              Ready for Action
+            </h3>
+            <p style={{ fontSize: "1.1rem", color: "#64748b", marginBottom: "2rem", maxWidth: "700px", margin: "0 auto 2rem" }}>
+              Our system integrates satellite imagery, weather data, and community feedback to provide comprehensive flood awareness and preparedness tools.
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <Link
+                href="/map"
+                className="btn btn-primary"
+                style={{ fontSize: "1rem", padding: "0.75rem 1.5rem" }}
+              >
+                Explore Interactive Map
+              </Link>
+              <Link
+                href="/globe"
+                className="btn btn-secondary"
+                style={{ fontSize: "1rem", padding: "0.75rem 1.5rem" }}
+              >
+                View Global Globe
+              </Link>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
