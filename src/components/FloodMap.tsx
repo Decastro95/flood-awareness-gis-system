@@ -16,6 +16,7 @@ export default function FloodMap() {
   const [showHighGround, setShowHighGround] = useState(true);
   const [showSafeZones, setShowSafeZones] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showHistoricalFloods, setShowHistoricalFloods] = useState(false);
   const [safeZones, setSafeZones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentMapStyle, setCurrentMapStyle] = useState("mapbox://styles/mapbox/satellite-streets-v12");
@@ -239,6 +240,30 @@ export default function FloodMap() {
 
         marker.setPopup(popup);
       });
+
+      // Historical floods overlay
+      map.addSource("historicalFloods", {
+        type: "image",
+        url: "/satellite-images/historical-floods-2011/radarsat-flooding-northern-namibia-2011-03-24.jpg",
+        coordinates: [
+          [14.0, -19.0], // sw
+          [17.0, -19.0], // se
+          [17.0, -17.0], // ne
+          [14.0, -17.0]  // nw
+        ]
+      });
+
+      map.addLayer({
+        id: "historical-floods",
+        type: "raster",
+        source: "historicalFloods",
+        layout: {
+          visibility: "none"
+        },
+        paint: {
+          "raster-opacity": 0.7
+        }
+      });
     });
 
     // Cleanup
@@ -272,6 +297,15 @@ export default function FloodMap() {
       showHighGround ? "visible" : "none"
     );
   }, [showHighGround]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    mapRef.current.setLayoutProperty(
+      "historical-floods",
+      "visibility",
+      showHistoricalFloods ? "visible" : "none"
+    );
+  }, [showHistoricalFloods]);
 
   return (
     <div className="map-container">
@@ -316,6 +350,16 @@ export default function FloodMap() {
               onChange={() => setShowSafeZones(!showSafeZones)}
             />
             <label htmlFor="safezones">🏫 Safe Zone Markers ({safeZones.length})</label>
+          </div>
+
+          <div className="control-option">
+            <input
+              type="checkbox"
+              id="historicalfloods"
+              checked={showHistoricalFloods}
+              onChange={() => setShowHistoricalFloods(!showHistoricalFloods)}
+            />
+            <label htmlFor="historicalfloods">📜 Historical Floods (2011)</label>
           </div>
         </div>
       </div>
