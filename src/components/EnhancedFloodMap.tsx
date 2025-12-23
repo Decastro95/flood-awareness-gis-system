@@ -300,6 +300,43 @@ export default function FloodMap() {
         },
       });
 
+      // Namibia major rivers
+      map.addSource("namibiaRivers", {
+        type: "geojson",
+        data: "/data/namibia/major_rivers.geojson",
+      });
+
+      map.addLayer({
+        id: "namibia-rivers",
+        type: "line",
+        source: "namibiaRivers",
+        paint: {
+          "line-color": "#0066cc",
+          "line-width": 3
+        },
+        layout: {
+          visibility: showRivers ? "visible" : "none"
+        }
+      });
+
+      // Namibia monitoring stations
+      map.addSource("monitoringStations", {
+        type: "geojson",
+        data: "/data/namibia/monitoring_stations.geojson",
+      });
+
+      map.addLayer({
+        id: "monitoring-stations",
+        type: "circle",
+        source: "monitoringStations",
+        paint: {
+          "circle-color": "#ff4444",
+          "circle-radius": 6,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2
+        },
+      });
+
       // Smooth entry animation
       map.easeTo({
         zoom: 6,
@@ -324,6 +361,11 @@ export default function FloodMap() {
     );
     mapRef.current.setLayoutProperty(
       "river-outline",
+      "visibility",
+      showRivers ? "visible" : "none"
+    );
+    mapRef.current.setLayoutProperty(
+      "namibia-rivers",
       "visibility",
       showRivers ? "visible" : "none"
     );
