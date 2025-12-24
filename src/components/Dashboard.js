@@ -13,7 +13,9 @@ import { AppBar, Toolbar, List, ListItem, ListItemIcon, ListItemText, Typography
 import { Map as MapIcon, Public as GlobeIcon, Warning as AlertIcon, Cloud as WeatherIcon, Send as SendIcon } from '@mui/icons-material';
 import supabase from '../lib/supabaseClient';
 import FloodAlertsPanel from '@/components/FloodAlertsPanel';
+import RealTimeAlerts from '@/components/RealTimeAlerts';
 
+<RealTimeAlerts />
 // In return JSX (e.g., right sidebar)
 <FloodAlertsPanel />
 const Dashboard = () => {
