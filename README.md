@@ -18,6 +18,7 @@ This system provides interactive flood risk visualization using GIS technology, 
 - **Elevation Profiles**: Detailed river elevation data for flood modeling and risk assessment
 - **Early Warning Alerts**: Flood alerts with severity classification and population-sensitive prioritization
 - **Seasonal Awareness**: Flood season indicators with heightened sensitivity during peak months (Jan-Mar)
+- “SMS alert functionality is implemented conceptually on the client for demonstration purposes. In production, message dispatch would be secured using Supabase Edge Functions to protect API credentials.”
 
 ### Recent Developments
 
