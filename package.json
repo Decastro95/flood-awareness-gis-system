@@ -5,7 +5,7 @@
   "description": "A web-based GIS platform for flood risk mapping and public awareness in Northern Namibia",
   "author": "Immanuel T Ndatipo",
   "license": "MIT",
-  "type": "commonjs",  // Add this or remove "module" to avoid config errors
+  "type": "commonjs",  
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -20,7 +20,7 @@
     "@supabase/supabase-js": "^2.45.4",
     "@turf/turf": "^6.5.0",
     "ai": "^6.0.3",
-    "exifr": "^7.1.0",  // Modern replacement for exif-js
+    "exifr": "^7.1.0",  
     "mapbox-gl": "^3.17.0",
     "next": "^15.0.0",
     "openai": "^6.15.0",
