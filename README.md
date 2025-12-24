@@ -10,6 +10,7 @@ This system provides interactive flood risk visualization using GIS technology, 
 
 - **Interactive Flood Risk Map**: Visualize flood-prone zones, river buffers, high-ground safe areas, and major Namibian rivers
 - **Namibia-Specific GIS Data**: Integrated comprehensive hydrological data including Zambezi, Kunene, Okavango, and Orange river systems
+- **Population Centers Mapping**: Display major cities and towns with population data for impact assessment
 - **Real-time Weather Integration**: Live rainfall, temperature, and humidity data from OpenWeatherMap
 - **Safe Zones Database**: Spatially-enabled shelters and evacuation points using Supabase + PostGIS
 - **River Monitoring Stations**: Real-time monitoring infrastructure locations for flood early warning
@@ -20,6 +21,7 @@ This system provides interactive flood risk visualization using GIS technology, 
 ### Recent Developments
 
 - **Namibia GIS Data Integration**: Added comprehensive hydrological datasets from Atlas of Namibia including major rivers, monitoring stations, and elevation profiles
+- **Population Centers Integration**: Added major Namibian cities and towns with population data for enhanced flood impact assessment
 - **Enhanced Mapping**: Integrated Mapbox GL JS with 3D globe view and advanced layer controls
 - **Data Restructuring**: Organized spatial data into dedicated Namibia-specific directories for better maintainability
 - **API Improvements**: Fixed Supabase connectivity and optimized data fetching for better performance
@@ -234,6 +236,7 @@ GET /api/safe-zones
 - **Namibia Hydrological Data**: Major rivers (Zambezi, Kunene, Okavango, Orange), river tributaries, catchments, and dams
 - **River Monitoring Stations**: Flow monitoring infrastructure locations
 - **Elevation Profiles**: Detailed elevation data along major Namibian rivers for flood modeling
+- **Population Centers**: Major cities and towns with population data for community impact assessment
 - **Flood Zones**: Simulated flood risk polygons based on hydrological modeling
 - **High Ground Areas**: Elevation-derived safe zones from DEM data
 - **River Buffers**: Flood-prone areas along Kunene, Kavango, and Zambezi rivers
@@ -303,6 +306,30 @@ Returns safe zone locations with capacity information.
     "latitude": -17.788
   }
 ]
+```
+
+### GET /api/population-centers
+Returns major Namibian cities and towns with population data as GeoJSON.
+
+**Response:**
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Windhoek",
+        "population": 431000,
+        "region": "Khomas"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [17.0658, -22.5597]
+      }
+    }
+  ]
+}
 ```
 
 ## 🗄️ Database Schema

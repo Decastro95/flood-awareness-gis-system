@@ -337,6 +337,62 @@ export default function FloodMap() {
         },
       });
 
+      // Namibia population centers
+      map.addSource("populationCenters", {
+        type: "geojson",
+        data: "/api/population-centers",
+      });
+
+      map.addLayer({
+        id: "population-centers",
+        type: "circle",
+        source: "populationCenters",
+        paint: {
+          "circle-color": "#ff6b35",
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["get", "population"],
+            500, 4,
+            10000, 8,
+            50000, 12,
+            100000, 16
+          ],
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
+          "circle-opacity": 0.8
+        },
+      });
+
+      // Add click handler for population centers
+      map.on("click", "population-centers", (e) => {
+        const features = e.features;
+        if (!features || features.length === 0) return;
+
+        const feature = features[0];
+        const props = feature.properties;
+        
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(`
+            <div style="font-family: 'Inter', sans-serif; max-width: 200px; line-height: 1.5;">
+              <h4 style="margin: 0 0 8px 0; color: #ff6b35; font-size: 1.1rem; font-weight: 600;">${props.city}</h4>
+              <p style="margin: 0 0 4px 0; font-size: 0.9rem; color: #374151;"><strong>Population:</strong> ${props.population.toLocaleString()}</p>
+              <p style="margin: 0 0 4px 0; font-size: 0.9rem; color: #374151;"><strong>Region:</strong> ${props.region}</p>
+              <p style="margin: 0; font-size: 0.8rem; color: #6b7280;">🏙️ Population Center</p>
+            </div>
+          `)
+          .addTo(map);
+      });
+
+      // Change cursor on hover
+      map.on("mouseenter", "population-centers", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "population-centers", () => {
+        map.getCanvas().style.cursor = "";
+      });
+
       // Smooth entry animation
       map.easeTo({
         zoom: 6,
