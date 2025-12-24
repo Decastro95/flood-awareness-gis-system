@@ -3,13 +3,6 @@
 import { useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-type FloodFeature = {
-  id: string;
-  name: string;
-  risk_level: 'Low' | 'Medium' | 'High';
-  geom: any; // PostGIS geometry (will be converted to GeoJSON)
-};
-
 type Props = {
   map: mapboxgl.Map | null;
 };
@@ -18,22 +11,34 @@ export default function SupabaseFloodLayer({ map }: Props) {
   useEffect(() => {
     if (!map) return;
 
-    const loadFloodData = async () => {
-      // Option A: Simple – fetch rows and use PostGIS function ST_AsGeoJSON
+    const loadFloodZones = async () => {
+      const bounds = map.getBounds();
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+
       const { data, error } = await supabase
-        .rpc('get_flood_zones_geojson') // ← recommended (see SQL below)
+        .rpc('get_flood_zones_in_bounds', {
+          min_lng: sw.lng,
+          max_lng: ne.lng,
+          min_lat: sw.lat,
+          max_lat: ne.lat,
+        })
         .single();
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('Supabase RPC error:', error);
         return;
       }
 
-      const geojson = data?.get_flood_zones_geojson || { type: 'FeatureCollection', features: [] };
+      const geojson = data?.get_flood_zones_in_bounds || {
+        type: 'FeatureCollection',
+        features: [],
+      };
 
-      // Add / update source
-      if (map.getSource('supabase-flood-zones')) {
-        (map.getSource('supabase-flood-zones') as mapboxgl.GeoJSONSource).setData(geojson);
+      // Update or add source
+      const source = map.getSource('supabase-flood-zones') as mapboxgl.GeoJSONSource;
+      if (source) {
+        source.setData(geojson);
       } else {
         map.addSource('supabase-flood-zones', {
           type: 'geojson',
@@ -51,7 +56,7 @@ export default function SupabaseFloodLayer({ map }: Props) {
               'High', '#ef4444',
               'Medium', '#f59e0b',
               'Low', '#10b981',
-              '#cccccc',
+              '#94a3b8', // default
             ],
             'fill-opacity': 0.6,
           },
@@ -62,22 +67,34 @@ export default function SupabaseFloodLayer({ map }: Props) {
           type: 'line',
           source: 'supabase-flood-zones',
           paint: {
-            'line-color': '#000',
-            'line-width': 1,
+            'line-color': '#1e293b',
+            'line-width': 1.5,
           },
         });
       }
     };
 
-    // Load once when map is ready
+    // Load once on map ready
     if (map.isStyleLoaded()) {
-      loadFloodData();
+      loadFloodZones();
     } else {
-      map.on('load', loadFloodData);
+      map.on('load', loadFloodZones);
     }
 
-    // Optional: reload when map moves (for very large datasets)
-    // map.on('moveend', loadFloodData);
+    // Reload on every moveend (pan/zoom) – debounced for performance
+    let timeout: NodeJS.Timeout;
+    const debouncedLoad = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(loadFloodZones, 300); // 300ms debounce
+    };
+
+    map.on('moveend', debouncedLoad);
+
+    // Cleanup
+    return () => {
+      map.off('moveend', debouncedLoad);
+      clearTimeout(timeout);
+    };
   }, [map]);
 
   return null;
