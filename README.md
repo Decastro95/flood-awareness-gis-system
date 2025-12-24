@@ -74,15 +74,19 @@ Developed as part of research on "Identifying Flood Risk and Flood-Free Areas fo
 
 3. **Environment Variables**
 
-   Create a `.env.local` file in the root directory:
+   Create a `.env.local` file in the root directory (see `.env.example` for template):
 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    NEXT_PUBLIC_WEATHER_API_KEY=your_openweathermap_api_key
    NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_access_token
-   XAI_API_KEY=your_xai_api_key
    ```
+
+   **For XAI API Key (Grok AI Integration):**
+   - Get your XAI API key from [x.ai](https://x.ai)
+   - Set `XAI_API_KEY` in your Vercel dashboard (Environment Variables → Production)
+   - Do NOT commit API keys to version control - use Vercel's environment variables instead
 
 4. **Database Setup**
 
