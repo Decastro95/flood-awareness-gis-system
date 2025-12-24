@@ -1,55 +1,77 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // If using Shadcn, otherwise use MUI/Box
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+const locations = [
+  { name: 'Oshakati', lat: -17.7833, lon: 15.6833 },
+  { name: 'Ondangwa', lat: -17.9167, lon: 15.9833 },
+  { name: 'Ongwediva', lat: -17.7833, lon: 15.7667 },
+  { name: 'Eenhana', lat: -17.4667, lon: 16.3333 },
+  { name: 'Ruacana', lat: -17.4167, lon: 14.2167 },
+  { name: 'Outapi', lat: -17.5000, lon: 14.9833 },
+  { name: 'Oshikuku', lat: -17.6333, lon: 15.4667 },
+  { name: 'Okahao', lat: -17.8833, lon: 15.0667 },
+  { name: 'Oniipa', lat: -17.8167, lon: 16.0333 },
+];
+
+type CurrentWeather = {
+  location: string;
+  temp: number;
+  humidity: number;
+  rain: number;
+  time: string;
+};
 
 type DailyForecast = {
   date: string;
-  rainfall_mm: number;
-  temp_max: number;
-  temp_min: number;
+  [key: string]: number | string; // Dynamic for each location's rainfall
 };
 
 export default function WeatherForecast() {
-  const [current, setCurrent] = useState<any>(null);
-  const [forecast, setForecast] = useState<DailyForecast[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState(locations[0]);
+  const [currentAll, setCurrentAll] = useState<CurrentWeather[]>([]);
+  const [forecastAll, setForecastAll] = useState<DailyForecast[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Coordinates for Oshakati (central northern Namibia – adjust if needed)
-  const LAT = -17.78;
-  const LON = 15.7;
-
-  const fetchWeather = async () => {
+  const fetchMultiWeather = async () => {
     try {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&daily=precipitation_sum,temperature_2m_max,temperature_2m_min&timezone=Africa%2FWindhoek`;
+      // Build comma-separated lists
+      const latitudes = locations.map(l => l.lat).join(',');
+      const longitudes = locations.map(l => l.lon).join(',');
+
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitudes}&longitude=${longitudes}&current=temperature_2m,relative_humidity_2m,precipitation&daily=precipitation_sum&timezone=Africa%2FWindhoek`;
 
       const res = await fetch(url);
       const data = await res.json();
 
-      // Current weather
-      setCurrent({
-        temp: data.current.temperature_2m,
-        humidity: data.current.relative_humidity_2m,
-        rain: data.current.precipitation,
-        time: new Date(data.current.time).toLocaleString('en-NA'),
-      });
-
-      // 7-day forecast
-      const daily = data.daily.time.map((date: string, i: number) => ({
-        date: new Date(date).toLocaleDateString('en-NA', { weekday: 'short', day: 'numeric' }),
-        rainfall_mm: data.daily.precipitation_sum[i],
-        temp_max: data.daily.temperature_2m_max[i],
-        temp_min: data.daily.temperature_2m_min[i],
-        isHighRisk: data.daily.precipitation_sum[i] > 30, // >30mm = flood risk
+      // Current weather for each location
+      const currentList: CurrentWeather[] = locations.map((loc, i) => ({
+        location: loc.name,
+        temp: data.current.temperature_2m[i],
+        humidity: data.current.relative_humidity_2m[i],
+        rain: data.current.precipitation[i],
+        time: new Date(data.current.time[i]).toLocaleString('en-NA'),
       }));
+      setCurrentAll(currentList);
 
-      setForecast(daily);
+      // Combined daily forecast
+      const dailyForecast: DailyForecast[] = data.daily.time[0].map((date: string, dayIndex: number) => {
+        const entry: DailyForecast = { date: new Date(date).toLocaleDateString('en-NA', { weekday: 'short', day: 'numeric' }) };
+        locations.forEach((loc, locIndex) => {
+          entry[loc.name] = data.daily.precipitation_sum[locIndex][dayIndex];
+        });
+        return entry;
+      });
+      setForecastAll(dailyForecast);
+
       setError(null);
     } catch (err) {
-      setError('Failed to load weather data');
+      setError('Failed to load multi-location weather');
       console.error(err);
     } finally {
       setLoading(false);
@@ -57,63 +79,78 @@ export default function WeatherForecast() {
   };
 
   useEffect(() => {
-    fetchWeather();
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000); // Every 30 mins
+    fetchMultiWeather();
+    const interval = setInterval(fetchMultiWeather, 30 * 60 * 1000); // Refresh every 30 mins
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <Card><CardContent><p>Loading weather...</p></CardContent></Card>;
+  const selectedCurrent = currentAll.find(c => c.location === selectedLocation.name);
+
+  if (loading) return <Card><CardContent><p>Loading forecasts for northern towns...</p></CardContent></Card>;
   if (error) return <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>;
 
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>🌧️ Weather Forecast – Oshakati Area</CardTitle>
+        <CardTitle>🌧️ Multi-Location Weather Forecast</CardTitle>
+        <Select value={selectedLocation.name} onValueChange={(value) => setSelectedLocation(locations.find(l => l.name === value)!)}>
+          <SelectTrigger className="w-full mt-2">
+            <SelectValue placeholder="Select location" />
+          </SelectTrigger>
+          <SelectContent>
+            {locations.map(loc => (
+              <SelectItem key={loc.name} value={loc.name}>{loc.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent>
-        {/* Current */}
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-gray-600">Current ({current.time})</p>
-          <div className="flex justify-between items-center mt-2">
-            <div>
-              <p className="text-3xl font-bold">{current.temp}°C</p>
-              <p className="text-sm">Humidity: {current.humidity}%</p>
-              <p className="text-sm">Rain: {current.rain} mm/h</p>
-            </div>
-            <div className="text-right">
-              {current.rain > 5 && (
+        {/* Current for selected */}
+        {selectedCurrent && (
+          <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-gray-600">Current in {selectedCurrent.location} ({selectedCurrent.time})</p>
+            <div className="flex justify-between items-center mt-2">
+              <div>
+                <p className="text-3xl font-bold">{selectedCurrent.temp}°C</p>
+                <p>Humidity: {selectedCurrent.humidity}%</p>
+                <p>Rain (hour): {selectedCurrent.rain} mm</p>
+              </div>
+              {selectedCurrent.rain > 5 && (
                 <Alert variant="destructive" className="text-sm">
-                  <AlertDescription>Heavy rain ongoing</AlertDescription>
+                  <AlertDescription>Ongoing heavy rain</AlertDescription>
                 </Alert>
               )}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* 7-Day Forecast Chart */}
-        <Typography variant="subtitle1" className="mb-2">7-Day Rainfall Forecast</Typography>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={forecast}>
+        {/* Combined Rainfall Chart */}
+        <Typography variant="subtitle1" className="mb-2">7-Day Rainfall Across Northern Towns</Typography>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={forecastAll}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip formatter={(value: number) => `${value} mm`} />
-            <Line
-              type="monotone"
-              dataKey="rainfall_mm"
-              stroke="#3b82f6"
-              strokeWidth={3}
-              dot={{ fill: '#ef4444' }}
-            />
+            <YAxis label={{ value: 'Rainfall (mm)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip formatter={(value: number) => `${value.toFixed(1)} mm`} />
+            <Legend />
+            {locations.map(loc => (
+              <Line
+                key={loc.name}
+                type="monotone"
+                dataKey={loc.name}
+                stroke={loc.name === selectedLocation.name ? '#ef4444' : '#3b82f6'}
+                strokeWidth={loc.name === selectedLocation.name ? 4 : 2}
+                dot={false}
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
 
-        {/* High Risk Days */}
-        {forecast.some(d => d.isHighRisk) && (
+        {/* High Risk Alerts */}
+        {forecastAll.some(day => Object.values(day).some((v: any) => typeof v === 'number' && v > 30)) && (
           <Alert variant="destructive" className="mt-4">
             <AlertDescription>
-              <strong>Flood Risk:</strong> Heavy rainfall (>30mm/day) forecast on:{' '}
-              {forecast.filter(d => d.isHighRisk).map(d => d.date).join(', ')}
+              <strong>Flood Risk:</strong> Heavy rainfall (>30mm/day) forecast in multiple locations.
             </AlertDescription>
           </Alert>
         )}
