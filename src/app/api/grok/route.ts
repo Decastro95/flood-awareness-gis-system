@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     const result = await streamText({
       model: xai('grok-2-1212'),
       prompt: enhancedPrompt,
-      maxTokens: 1000,
     });
 
     // Convert the stream to a string for JSON response

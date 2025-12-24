@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import mapboxgl from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
@@ -16,6 +17,7 @@ export default function FloodMap() {
   const [showHighGround, setShowHighGround] = useState(true);
   const [showSafeZones, setShowSafeZones] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showHistoricalFloods, setShowHistoricalFloods] = useState(false);
   const [safeZones, setSafeZones] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentMapStyle, setCurrentMapStyle] = useState("mapbox://styles/mapbox/satellite-streets-v12");
@@ -125,8 +127,8 @@ export default function FloodMap() {
     animate();
   };
 
-  useEffect(() => {
-    if (!mapContainer.current || loading) return;
+  // useEffect(() => {
+  //   if (!mapContainer.current || loading) return;
 
     // Set Mapbox access token
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
@@ -136,18 +138,10 @@ export default function FloodMap() {
       style: currentMapStyle,
       center: [17.5, -18.0],
       zoom: 5,
-      projection: 'mercator', // Start with flat map
-      pitch: 0,
-      bearing: 0,
-      antialias: true,
     });
 
     mapRef.current = map;
-
-    // Add essential controls
     map.addControl(new mapboxgl.NavigationControl(), "top-right");
-    map.addControl(new mapboxgl.ScaleControl(), "bottom-left");
-    map.addControl(new mapboxgl.FullscreenControl(), "top-right");
 
     // Add geocoder
     const geocoder = new MapboxGeocoder({
@@ -157,6 +151,9 @@ export default function FloodMap() {
       limit: 5
     });
     map.addControl(geocoder, "top-left");
+
+    // Add scale control
+    map.addControl(new mapboxgl.ScaleControl(), "bottom-left");
 
     map.on("load", () => {
       // River flood buffers
@@ -171,7 +168,7 @@ export default function FloodMap() {
         source: "riverFloodBuffers",
         paint: {
           "fill-color": "#0284c7",
-          "fill-opacity": showRivers ? 0.35 : 0,
+          "fill-opacity": 0.35,
         },
       });
 
@@ -183,9 +180,6 @@ export default function FloodMap() {
           "line-color": "#075985",
           "line-width": 2,
         },
-        layout: {
-          visibility: showRivers ? "visible" : "none"
-        }
       });
 
       // High ground areas
@@ -200,7 +194,7 @@ export default function FloodMap() {
         source: "highGround",
         paint: {
           "fill-color": "#16a34a",
-          "fill-opacity": showHighGround ? 0.35 : 0,
+          "fill-opacity": 0.35,
         },
       });
 
@@ -212,92 +206,64 @@ export default function FloodMap() {
           "line-color": "#166534",
           "line-width": 2,
         },
-        layout: {
-          visibility: showHighGround ? "visible" : "none"
-        }
       });
 
       // Safe zones markers
-      if (safeZones.length > 0) {
-        map.addSource("safeZones", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: safeZones.map((zone) => ({
-              type: "Feature",
-              geometry: {
-                type: "Point",
-                coordinates: [zone.longitude, zone.latitude],
-              },
-              properties: zone,
-            })),
-          },
-        });
-
-        // Add markers for safe zones
-        safeZones.forEach((zone) => {
-          const marker = new mapboxgl.Marker({ color: "#16a34a" })
-            .setLngLat([zone.longitude, zone.latitude])
-            .addTo(map);
-
-          // Create popup
-          const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-            `<div style="font-family: 'Inter', sans-serif; max-width: 200px; line-height: 1.5;">
-              <h4 style="margin: 0 0 8px 0; color: #16a34a; font-size: 1.1rem; font-weight: 600;">${zone.name}</h4>
-              <p style="margin: 0 0 4px 0; font-size: 0.9rem; color: #374151;"><strong>Capacity:</strong> ${zone.capacity} people</p>
-              <p style="margin: 0; font-size: 0.8rem; color: #6b7280;">🏫 Safe evacuation zone</p>
-            </div>`
-          );
-
-          marker.setPopup(popup);
-        });
-      }
-
-      // Add heatmap layer for flood risk visualization
-      map.addSource("floodHeatmap", {
+      map.addSource("safeZones", {
         type: "geojson",
-        data: "/data/flood_zones.geojson",
+        data: {
+          type: "FeatureCollection",
+          features: safeZones.map((zone) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [zone.longitude, zone.latitude],
+            },
+            properties: zone,
+          })),
+        },
+      });
+
+      // Add markers for safe zones
+      safeZones.forEach((zone) => {
+        const marker = new mapboxgl.Marker({ color: "#16a34a" })
+          .setLngLat([zone.longitude, zone.latitude])
+          .addTo(map);
+
+        // Create popup
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+          `<div style="font-family: 'Inter', sans-serif; max-width: 200px; line-height: 1.5;">
+            <h4 style="margin: 0 0 8px 0; color: #16a34a; font-size: 1.1rem; font-weight: 600;">${zone.name}</h4>
+            <p style="margin: 0 0 4px 0; font-size: 0.9rem; color: #374151;"><strong>Capacity:</strong> ${zone.capacity} people</p>
+            <p style="margin: 0; font-size: 0.8rem; color: #6b7280;">🏫 Safe evacuation zone</p>
+          </div>`
+        );
+
+        marker.setPopup(popup);
+      });
+
+      // Historical floods overlay
+      map.addSource("historicalFloods", {
+        type: "image",
+        url: "/satellite-images/historical-floods-2011/radarsat-flooding-northern-namibia-2011-03-24.jpg",
+        coordinates: [
+          [14.0, -19.0], // sw
+          [17.0, -19.0], // se
+          [17.0, -17.0], // ne
+          [14.0, -17.0]  // nw
+        ]
       });
 
       map.addLayer({
-        id: "flood-heatmap",
-        type: "heatmap",
-        source: "floodHeatmap",
-        paint: {
-          "heatmap-weight": [
-            "interpolate",
-            ["linear"],
-            ["get", "severity"],
-            0, 0,
-            5, 1
-          ],
-          "heatmap-intensity": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            0, 1,
-            9, 3
-          ],
-          "heatmap-color": [
-            "interpolate",
-            ["linear"],
-            ["heatmap-density"],
-            0, "rgba(33,102,172,0)",
-            0.2, "rgb(103,169,207)",
-            0.4, "rgb(209,229,240)",
-            0.6, "rgb(253,219,199)",
-            0.8, "rgb(239,138,98)",
-            1, "rgb(178,24,43)"
-          ],
-          "heatmap-radius": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            0, 2,
-            9, 20
-          ],
-          "heatmap-opacity": showHeatmap ? 0.7 : 0,
+        id: "historical-floods",
+        type: "raster",
+        source: "historicalFloods",
+        layout: {
+          visibility: "none"
         },
+        paint: {
+          "raster-opacity": 0.7
+        }
       });
 
       // Namibia major rivers
@@ -314,9 +280,6 @@ export default function FloodMap() {
           "line-color": "#0066cc",
           "line-width": 3
         },
-        layout: {
-          visibility: showRivers ? "visible" : "none"
-        }
       });
 
       // Namibia monitoring stations
@@ -371,8 +334,7 @@ export default function FloodMap() {
 
         const feature = features[0];
         const props = feature.properties;
-        if (!props) return;
-
+        
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(`
@@ -394,162 +356,168 @@ export default function FloodMap() {
         map.getCanvas().style.cursor = "";
       });
 
-      // Smooth entry animation
-      map.easeTo({
-        zoom: 6,
-        duration: 2000,
-      });
-    });
-
     // Cleanup
-    return () => {
-      stopSpinning();
-      map.remove();
-    };
-  }, [loading, safeZones, currentMapStyle]);
+  //   return () => map.remove();
+  // }, [loading, safeZones, currentMapStyle]);
 
-  // Update layer visibility
-  useEffect(() => {
-    if (!mapRef.current) return;
-    mapRef.current.setLayoutProperty(
-      "river-fill",
-      "visibility",
-      showRivers ? "visible" : "none"
-    );
-    mapRef.current.setLayoutProperty(
-      "river-outline",
-      "visibility",
-      showRivers ? "visible" : "none"
-    );
-    mapRef.current.setLayoutProperty(
-      "namibia-rivers",
-      "visibility",
-      showRivers ? "visible" : "none"
-    );
-  }, [showRivers]);
+  // useEffect(() => {
+  //   if (!mapRef.current) return;
+  //   mapRef.current.setLayoutProperty(
+  //     "river-fill",
+  //     "visibility",
+  //     showRivers ? "visible" : "none"
+  //   );
+  //   mapRef.current.setLayoutProperty(
+  //     "river-outline",
+  //     "visibility",
+  //     showRivers ? "visible" : "none"
+  //   );
+  //   mapRef.current.setLayoutProperty(
+  //     "namibia-rivers",
+  //     "visibility",
+  //     showRivers ? "visible" : "none"
+  //   );
+  // }, [showRivers]);
 
-  useEffect(() => {
-    if (!mapRef.current) return;
-    mapRef.current.setLayoutProperty(
-      "high-ground-fill",
-      "visibility",
-      showHighGround ? "visible" : "none"
-    );
-    mapRef.current.setLayoutProperty(
-      "high-ground-outline",
-      "visibility",
-      showHighGround ? "visible" : "none"
-    );
-  }, [showHighGround]);
+  // useEffect(() => {
+  //   if (!mapRef.current) return;
+  //   mapRef.current.setLayoutProperty(
+  //     "high-ground-fill",
+  //     "visibility",
+  //     showHighGround ? "visible" : "none"
+  //   );
+  //   mapRef.current.setLayoutProperty(
+  //     "high-ground-outline",
+  //     "visibility",
+  //     showHighGround ? "visible" : "none"
+  //   );
+  // }, [showHighGround]);
 
-  useEffect(() => {
-    if (!mapRef.current) return;
-    mapRef.current.setPaintProperty(
-      "flood-heatmap",
-      "heatmap-opacity",
-      showHeatmap ? 0.7 : 0
-    );
-  }, [showHeatmap]);
+  // useEffect(() => {
+  //   if (!mapRef.current) return;
+  //   mapRef.current.setLayoutProperty(
+  //     "historical-floods",
+  //     "visibility",
+  //     showHistoricalFloods ? "visible" : "none"
+  //   );
+  // }, [showHistoricalFloods]);
 
   return (
     <div className="map-container">
-      {/* Interactive Controls */}
-      <div className="map-controls-panel">
-        <div className="controls-grid">
-          <MapStyleSelector
-            currentStyle={currentMapStyle}
-            onStyleChange={handleStyleChange}
-          />
+      {/* Map Controls */}
+      <div className="map-controls">
+        <MapStyleSelector
+          currentStyle={currentMapStyle}
+          onStyleChange={handleStyleChange}
+        />
 
-          <div className="control-group">
-            <h4>🌍 View Controls</h4>
-            <div className="control-buttons">
-              <button
-                onClick={toggleGlobeView}
-                className={`control-btn ${isGlobeView ? 'active' : ''}`}
-              >
-                {isGlobeView ? '🌍 Flat Map' : '🌐 Globe View'}
-              </button>
-              <button
-                onClick={isSpinning ? stopSpinning : startSpinning}
-                className={`control-btn ${isSpinning ? 'active spinning' : ''}`}
-              >
-                {isSpinning ? '⏸️ Stop Spin' : '🔄 Spin Globe'}
-              </button>
-            </div>
+        <div className="control-group">
+          <div className="control-title">
+            <span>🎛️</span>
+            Layers
           </div>
 
-          <div className="control-group">
-            <h4>🎯 Quick Locations</h4>
-            <div className="control-buttons">
-              <button onClick={() => flyToLocation(16.5, -17.8)} className="control-btn">
-                🏙️ Oshakati
-              </button>
-              <button onClick={() => flyToLocation(17.1, -21.5)} className="control-btn">
-                🏛️ Windhoek
-              </button>
-              <button onClick={() => flyToLocation(14.5, -17.5)} className="control-btn">
-                🌊 Rundu
-              </button>
-            </div>
+          <div className="control-option">
+            <input
+              type="checkbox"
+              id="rivers"
+              checked={showRivers}
+              onChange={() => setShowRivers(!showRivers)}
+            />
+            <label htmlFor="rivers">Rivers</label>
           </div>
 
-          <div className="control-group">
-            <h4>📊 Data Layers</h4>
-            <div className="control-buttons">
-              <button
-                onClick={() => setShowHeatmap(!showHeatmap)}
-                className={`control-btn ${showHeatmap ? 'active' : ''}`}
-              >
-                🔥 Flood Heatmap
-              </button>
-              <button
-                onClick={() => setShowRivers(!showRivers)}
-                className={`control-btn ${showRivers ? 'active' : ''}`}
-              >
-                🌊 Rivers
-              </button>
-              <button
-                onClick={() => setShowHighGround(!showHighGround)}
-                className={`control-btn ${showHighGround ? 'active' : ''}`}
-              >
-                ⛰️ High Ground
-              </button>
-            </div>
+          <div className="control-option">
+            <input
+              type="checkbox"
+              id="highground"
+              checked={showHighGround}
+              onChange={() => setShowHighGround(!showHighGround)}
+            />
+            <label htmlFor="highground">High Ground</label>
           </div>
 
-          <div className="control-group">
-            <h4>🎬 Animations</h4>
-            <div className="control-buttons">
-              <button onClick={animateRoute} className="control-btn">
-                🚀 Monitor Route
-              </button>
-            </div>
+          <div className="control-option">
+            <input
+              type="checkbox"
+              id="safezones"
+              checked={showSafeZones}
+              onChange={() => setShowSafeZones(!showSafeZones)}
+            />
+            <label htmlFor="safezones">Safe Zones</label>
+          </div>
+
+          <div className="control-option">
+            <input
+              type="checkbox"
+              id="historical"
+              checked={showHistoricalFloods}
+              onChange={() => setShowHistoricalFloods(!showHistoricalFloods)}
+            />
+            <label htmlFor="historical">Historical Floods</label>
+          </div>
+        </div>
+
+        <div className="control-group">
+          <div className="control-title">
+            <span>🌍</span>
+            View
+          </div>
+
+          <div className="control-option">
+            <button
+              onClick={toggleGlobeView}
+              className={`view-toggle ${isGlobeView ? 'active' : ''}`}
+            >
+              🌐 Globe
+            </button>
+          </div>
+        </div>
+
+        <div className="control-group">
+          <div className="control-title">
+            <span>🎬</span>
+            Animation
+          </div>
+
+          <div className="control-option">
+            <button
+              onClick={animateRoute}
+              className="animate-button"
+            >
+              ▶️ Monitor Route
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Map Container */}
-      <div
-        ref={mapContainer}
-        className="map-viewport"
-        style={{
-          height: "100%",
-          width: "100%",
-          borderRadius: "12px",
-          overflow: "hidden"
-        }}
-      />
+      <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
 
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Loading flood data...</p>
-          </div>
+      {/* Legend */}
+      <div className="map-legend">
+        <div className="legend-title">Flood Risk Legend</div>
+
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: "#0284c7", opacity: 0.7 }}></div>
+          <span>Flood Zones</span>
         </div>
-      )}
+
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: "#16a34a", opacity: 0.7 }}></div>
+          <span>High Ground Safe Areas</span>
+        </div>
+
+        <div className="legend-item">
+          <div className="legend-color" style={{ backgroundColor: "#16a34a", borderRadius: "50%" }}></div>
+          <span>Safe Zone Shelters</span>
+        </div>
+
+        <div className="text-center mt-2">
+          <small style={{ color: "#6b7280", fontSize: "0.75rem" }}>
+            Click markers for shelter details
+          </small>
+        </div>
+      </div>
     </div>
   );
 }
