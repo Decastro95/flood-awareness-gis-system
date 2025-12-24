@@ -2,59 +2,50 @@
   "name": "flood-awareness-gis-system",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "A web-based GIS platform for flood risk mapping and public awareness in Northern Namibia",
   "author": "Immanuel T Ndatipo",
   "license": "MIT",
+  "type": "commonjs",  // Add this or remove "module" to avoid config errors
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "next lint --fix",
+    "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "echo \"No tests specified\" && exit 0",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "grok-test": "node grok-test.js"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ai-sdk/xai": "^3.0.1",
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
-    "@supabase/supabase-js": "^2.39.0",
-    "exif-js": "^2.3.0",
-  "turf": "^6.5.0",
-  "@turf/turf": "^6.5.0",
-  "@supabase/supabase-js": "^2.45.4",
+    "@supabase/supabase-js": "^2.45.4",
+    "@turf/turf": "^6.5.0",
     "ai": "^6.0.3",
-    "dotenv": "^17.2.3",
+    "exifr": "^7.1.0",  // Modern replacement for exif-js
     "mapbox-gl": "^3.17.0",
     "next": "^15.0.0",
     "openai": "^6.15.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/mapbox__mapbox-gl-geocoder": "^5.1.0",
-    "@types/node": "^20.0.0",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
-    "eslint": "9.39.2",
-    "eslint-config-next": "16.1.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.3.0"
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.1.0",
+    "prettier": "^3",
+    "typescript": "^5"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=20"
   },
   "keywords": [
     "gis",
     "flood-awareness",
     "namibia",
-    "disaster-preparedness",
     "nextjs",
-    "maplibre",
+    "mapbox",
     "supabase"
   ],
   "repository": {
