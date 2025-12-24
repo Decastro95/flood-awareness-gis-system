@@ -12,7 +12,10 @@ import { LineChart, BarChart, PieChart, Line, Bar, Pie, Tooltip, Legend, XAxis, 
 import { AppBar, Toolbar, List, ListItem, ListItemIcon, ListItemText, Typography, IconButton, Slider, Alert, Box, Grid, TextField, Button } from '@mui/material';
 import { Map as MapIcon, Public as GlobeIcon, Warning as AlertIcon, Cloud as WeatherIcon, Send as SendIcon } from '@mui/icons-material';
 import supabase from '../lib/supabaseClient';
+import FloodAlertsPanel from '@/components/FloodAlertsPanel';
 
+// In return JSX (e.g., right sidebar)
+<FloodAlertsPanel />
 const Dashboard = () => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
