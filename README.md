@@ -4,15 +4,25 @@ A web-based GIS platform for flood risk mapping and public awareness in Northern
 
 ## 🌊 Project Overview
 
-This system provides interactive flood risk visualization using GIS technology, integrating real-time weather data, spatial flood zones, and safe evacuation areas. Designed for the oshana floodplain environment of northern Namibia, it supports community-focused disaster risk reduction through accessible web-based tools.
+This system provides interactive flood risk visualization using GIS technology, integrating real-time weather data, comprehensive Namibian hydrological data, spatial flood zones, and safe evacuation areas. Designed for the oshana floodplain environment of northern Namibia, it supports community-focused disaster risk reduction through accessible web-based tools with detailed spatial analysis capabilities.
 
 ### Key Features
 
-- **Interactive Flood Risk Map**: Visualize flood-prone zones, river buffers, and high-ground safe areas
+- **Interactive Flood Risk Map**: Visualize flood-prone zones, river buffers, high-ground safe areas, and major Namibian rivers
+- **Namibia-Specific GIS Data**: Integrated comprehensive hydrological data including Zambezi, Kunene, Okavango, and Orange river systems
 - **Real-time Weather Integration**: Live rainfall, temperature, and humidity data from OpenWeatherMap
 - **Safe Zones Database**: Spatially-enabled shelters and evacuation points using Supabase + PostGIS
+- **River Monitoring Stations**: Real-time monitoring infrastructure locations for flood early warning
+- **Elevation Profiles**: Detailed river elevation data for flood modeling and risk assessment
 - **Early Warning Alerts**: Flood alerts with severity classification and population-sensitive prioritization
 - **Seasonal Awareness**: Flood season indicators with heightened sensitivity during peak months (Jan-Mar)
+
+### Recent Developments
+
+- **Namibia GIS Data Integration**: Added comprehensive hydrological datasets from Atlas of Namibia including major rivers, monitoring stations, and elevation profiles
+- **Enhanced Mapping**: Integrated Mapbox GL JS with 3D globe view and advanced layer controls
+- **Data Restructuring**: Organized spatial data into dedicated Namibia-specific directories for better maintainability
+- **API Improvements**: Fixed Supabase connectivity and optimized data fetching for better performance
 
 ### Academic Context
 
@@ -63,9 +73,10 @@ Developed as part of research on "Identifying Flood Risk and Flood-Free Areas fo
    Create a `.env.local` file in the root directory:
 
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    NEXT_PUBLIC_WEATHER_API_KEY=your_openweathermap_api_key
+   NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_access_token
    ```
 
 4. **Database Setup**
@@ -95,11 +106,18 @@ Developed as part of research on "Identifying Flood Risk and Flood-Free Areas fo
 
 5. **GeoJSON Data**
 
-   Place the following GeoJSON files in `public/data/`:
-   - `flood_zones.geojson`
-   - `high_ground_elevation.geojson`
-   - `river_flood_buffers.geojson`
-   - `northern_regions.geojson`
+   Place the following GeoJSON files in `public/data/` and `public/data/namibia/`:
+   - `flood_zones.geojson` - Flood risk polygons
+   - `high_ground_elevation.geojson` - Safe elevation areas
+   - `river_flood_buffers.geojson` - Flood-prone river buffers
+   - `northern_regions.geojson` - Administrative boundaries
+   - `namibia/major_rivers.geojson` - Major Namibian river systems
+   - `namibia/monitoring_stations.geojson` - River monitoring infrastructure
+   - `namibia/catchments.geojson` - Watershed boundaries
+   - `namibia/dams.geojson` - Dam locations
+   - `namibia/river_tributaries.geojson` - Detailed tributary network
+
+   Elevation profiles are available in `public/data/namibia/profiles/` as CSV files.
 
 6. **Run the development server**
    ```bash
@@ -176,10 +194,13 @@ GET /api/safe-zones
          │
          ▼
 ┌────────────────────────────────────────────┐
-│          Spatial Data Files (GeoJSON)        │
+│          Spatial Data Files (GeoJSON/CSV)    │
 │                                            │
 │ • Flood Risk Zones                          │
 │ • Elevation / High Ground Areas             │
+│ • Namibia Hydrological Data                 │
+│ • River Monitoring Stations                 │
+│ • Elevation Profiles (CSV)                  │
 └────────────────────────────────────────────┘
 ```
 
@@ -189,7 +210,7 @@ GET /api/safe-zones
 - **Next.js 15**: React framework with App Router
 - **React 19**: UI library
 - **TypeScript**: Type-safe JavaScript
-- **MapLibre GL JS**: Open-source mapping library
+- **Mapbox GL JS**: Interactive mapping library with 3D globe support
 - **Tailwind CSS**: Utility-first CSS framework
 
 ### Backend
@@ -210,6 +231,9 @@ GET /api/safe-zones
 ## 📊 Data Sources
 
 ### Spatial Data
+- **Namibia Hydrological Data**: Major rivers (Zambezi, Kunene, Okavango, Orange), river tributaries, catchments, and dams
+- **River Monitoring Stations**: Flow monitoring infrastructure locations
+- **Elevation Profiles**: Detailed elevation data along major Namibian rivers for flood modeling
 - **Flood Zones**: Simulated flood risk polygons based on hydrological modeling
 - **High Ground Areas**: Elevation-derived safe zones from DEM data
 - **River Buffers**: Flood-prone areas along Kunene, Kavango, and Zambezi rivers
@@ -226,6 +250,7 @@ GET /api/safe-zones
 - **Supabase/PostGIS**: Spatially-enabled PostgreSQL for:
   - Safe zone locations and capacities
   - Flood alert records with geographic context
+  - Real-time data synchronization
 
 ## 🔌 API Endpoints
 
@@ -312,9 +337,10 @@ Returns safe zone locations with capacity information.
 ### Environment Variables
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://fohtrrqbibinhqzmuhqr.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 NEXT_PUBLIC_WEATHER_API_KEY=your-openweathermap-key
+NEXT_PUBLIC_MAPBOX_TOKEN=your-mapbox-access-token
 ```
 
 ## 🤝 Contributing
@@ -352,6 +378,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Programme: Bachelor of Science in Computer Science & Information Technology (Honours) NQA LEVEL 7
 - Institution: Triumphant College (Distance Programme)
 - Year: 2025
+- Project: Flood Awareness GIS System for Northern Namibia
 
 ## 📚 References
 
