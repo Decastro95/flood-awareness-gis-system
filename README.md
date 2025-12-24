@@ -11,6 +11,7 @@ This system provides interactive flood risk visualization using GIS technology, 
 - **Interactive Flood Risk Map**: Visualize flood-prone zones, river buffers, high-ground safe areas, and major Namibian rivers
 - **Namibia-Specific GIS Data**: Integrated comprehensive hydrological data including Zambezi, Kunene, Okavango, and Orange river systems
 - **Population Centers Mapping**: Display major cities and towns with population data for impact assessment
+- **AI-Powered Analysis**: Grok AI integration for intelligent flood risk assessment and disaster management insights
 - **Real-time Weather Integration**: Live rainfall, temperature, and humidity data from OpenWeatherMap
 - **Safe Zones Database**: Spatially-enabled shelters and evacuation points using Supabase + PostGIS
 - **River Monitoring Stations**: Real-time monitoring infrastructure locations for flood early warning
@@ -22,6 +23,7 @@ This system provides interactive flood risk visualization using GIS technology, 
 
 - **Namibia GIS Data Integration**: Added comprehensive hydrological datasets from Atlas of Namibia including major rivers, monitoring stations, and elevation profiles
 - **Population Centers Integration**: Added major Namibian cities and towns with population data for enhanced flood impact assessment
+- **AI Integration**: Integrated Grok AI for intelligent flood risk analysis and disaster management insights
 - **Enhanced Mapping**: Integrated Mapbox GL JS with 3D globe view and advanced layer controls
 - **Data Restructuring**: Organized spatial data into dedicated Namibia-specific directories for better maintainability
 - **API Improvements**: Fixed Supabase connectivity and optimized data fetching for better performance
@@ -79,6 +81,7 @@ Developed as part of research on "Identifying Flood Risk and Flood-Free Areas fo
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    NEXT_PUBLIC_WEATHER_API_KEY=your_openweathermap_api_key
    NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_access_token
+   XAI_API_KEY=your_xai_api_key
    ```
 
 4. **Database Setup**
@@ -329,6 +332,24 @@ Returns major Namibian cities and towns with population data as GeoJSON.
       }
     }
   ]
+}
+```
+
+### POST /api/grok
+Provides AI-powered flood risk analysis and disaster management insights using Grok AI.
+
+**Request Body:**
+```json
+{
+  "prompt": "What are the flood risks in the Kunene River basin?"
+}
+```
+
+**Response:**
+```json
+{
+  "response": "Based on the geospatial data available, the Kunene River basin experiences seasonal flooding during the rainy season (December-March)...",
+  "timestamp": "2025-01-15T10:30:00Z"
 }
 ```
 
