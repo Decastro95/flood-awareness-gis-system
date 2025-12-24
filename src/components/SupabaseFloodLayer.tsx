@@ -99,3 +99,14 @@ export default function SupabaseFloodLayer({ map }: Props) {
 
   return null;
 }
+const [loading, setLoading] = useState(true);
+
+// In SupabaseFloodLayer, after successful load:
+setLoading(false);
+
+// In UI:
+{loading && (
+  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded shadow">
+    Loading flood zones...
+  </div>
+)}
